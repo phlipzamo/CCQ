@@ -1,0 +1,176 @@
+:root {
+    --base-font-size: 16px;
+}
+
+body {
+    font-size: var(--base-font-size);
+    background: url('galaxy.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    color: #FFD700;
+    text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+    margin-bottom: 20px;
+    z-index: 2;
+}
+
+p {
+    line-height: 1.6;
+    margin: 20px 0;
+    z-index: 2;
+}
+
+button {
+    background-color: #1E90FF;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: var(--base-font-size);
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #1E90FF;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    z-index: 2;
+}
+
+button:hover {
+    background-color: #00BFFF;
+    box-shadow: 0 0 20px #00BFFF;
+}
+
+.container {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+.scriptcontainer {
+    width: 80%;
+    height: 80%;
+    max-width: 600px;
+    max-height: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+.consolecontainer {
+    width: 80%;
+    max-width: 150px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+.gamecontainer {
+    width: 80%;
+    height: 80%;
+    max-width: 600px;
+    max-height: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
+
+form {
+    text-align: center;
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 5px 0 10px;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 10px #1E90FF;
+}
+
+form button {
+    display: block;
+    margin: 10px auto;
+}
+
+.high-contrast {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+.high-contrast .container {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+.level-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 400px;
+}
+
+.level-box {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 244, 26, 0.8);
+    border: 2px solid #000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.level-box:hover {
+    transform: scale(1.1);
+}
+

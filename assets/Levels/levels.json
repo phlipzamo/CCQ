@@ -1,0 +1,41 @@
+{"level1": {
+    "row": 3,
+    "col": 3,
+    "ufo": 6,
+    "earth":2,
+    
+    "astroids": [
+        {"place": 0},
+        {"place": 1},
+        {"place": 3},
+        {"place": 8}
+    ],
+    "wormholes": [
+        {"start": 0,"end":1}
+    ]
+    
+  },
+"level2": {
+    "row": 6,
+    "col": 6,
+    "ufo": 6,
+    "earth":34,
+    
+    "astroids": [
+        {"place": 0},
+        {"place": 1},
+        {"place": 8},
+        {"place": 12},
+        {"place": 15},
+        {"place": 19},
+        {"place": 22},
+        {"place": 26},
+        {"place": 29},
+        {"place": 33},
+        {"place": 35}
+    ],
+    "wormholes": [
+        {"start": 0,"end":1}
+    ]
+    
+  }}

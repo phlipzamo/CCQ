@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Code Quest</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scriptcontainer">
+        <div class="script-section">
+            <!-- Script commands go here
+            <textarea id="scriptCommands" rows="10" cols="30"></textarea>
+            <button onclick="executeScript()">Execute</button> -->
+        </div>
+        </div>
+        <div class="consolecontainer">
+            <!-- Forward, right, left buttons -->
+            <button onclick="move('forward')">Forward</button>
+            <button onclick="move('right')">Rotate Right</button>
+            <button onclick="move('left')">Rotate Left</button>
+            <button onclick="move('backward')">Backward</button>
+        </div>
+    </div class="scriptcontainer">
+    
+    
+    <div class="scriptcontainer" id = "phaser-div" >
+        <script src="js/phaser.js">  
+        </script>
+        <script src="js/util/align.js">  
+        </script>
+        <script src="js/util/alignGrid.js">  
+        </script>
+        <script src="js/util/UIBlock.js">  
+        </script>
+        <script src="js/sceneMain.js"></script>
+        <script src="js/main.js"></script>
+        <!-- Game grid for graphics -->
+        <!-- This section will be filled with game graphics -->
+    </div class="scriptcontainer">
+</body>
+</html>

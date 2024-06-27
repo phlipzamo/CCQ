@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>HOME PAGE</h1>
+        <p>Explore the galaxy and earn badges!</p>
+        <button onclick="location.href='difficulty.html'">Play Game</button>
+        <button onclick="location.href='user.html'">User Page</button>   
+        <button onclick="location.href='accessibility.html'">Accessibility</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        function logout() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
