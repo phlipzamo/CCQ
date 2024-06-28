@@ -7,13 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="scriptcontainer">
-        <div class="script-section">
-            <!-- Script commands go here
-            <textarea id="scriptCommands" rows="10" cols="30"></textarea>
-            <button onclick="executeScript()">Execute</button> -->
-        </div>
-        </div>
+    <div id ="editorCode" class="scriptcontainer">   
+    </div>
+    <div>
         <div class="consolecontainer">
             <!-- Forward, right, left buttons -->
             <button onclick="move('forward')">Forward</button>
@@ -22,8 +18,6 @@
             <button onclick="move('backward')">Backward</button>
         </div>
     </div class="scriptcontainer">
-    
-    
     <div class="scriptcontainer" id = "phaser-div" >
         <script src="js/phaser.js">  
         </script>
@@ -38,5 +32,9 @@
         <!-- Game grid for graphics -->
         <!-- This section will be filled with game graphics -->
     </div class="scriptcontainer">
+
+    <script src="js/src-min/ace.js"></script>
+    <script src = "js/src-min/mode-plain_text.js"></script>
+    <script src = "js/editor.js"></script>
 </body>
 </html>
