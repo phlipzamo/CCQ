@@ -3,6 +3,7 @@
     --editor-bg: #eee;
     --editor-border: #3f87a6;
 }
+
 body {
     font-size: var(--base-font-size);
     background: url('galaxy.jpg') no-repeat center center fixed;
@@ -17,7 +18,7 @@ body {
     height: 100vh;
     text-align: center;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
 }
 
 h1 {
@@ -174,6 +175,7 @@ form button {
 .level-box:hover {
     transform: scale(1.1);
 }
+
 .editor {
     height: 100%;
     width: 100%;

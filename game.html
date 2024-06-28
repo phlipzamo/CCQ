@@ -7,32 +7,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id ="editorCode" class="scriptcontainer">   
+    <div id ="editorCode" class="scriptcontainer">
+      
     </div>
-    <div>
-        <div class="consolecontainer">
-            <!-- Forward, right, left buttons -->
-            <button onclick="move('forward')">Forward</button>
-            <button onclick="move('right')">Rotate Right</button>
-            <button onclick="move('left')">Rotate Left</button>
-            <button onclick="move('backward')">Backward</button>
-        </div>
-    </div class="scriptcontainer">
-    <div class="scriptcontainer" id = "phaser-div" >
-        <script src="js/phaser.js">  
-        </script>
-        <script src="js/util/align.js">  
-        </script>
-        <script src="js/util/alignGrid.js">  
-        </script>
-        <script src="js/util/UIBlock.js">  
-        </script>
-        <script src="js/sceneMain.js"></script>
-        <script src="js/main.js"></script>
-        <!-- Game grid for graphics -->
-        <!-- This section will be filled with game graphics -->
-    </div class="scriptcontainer">
 
+    <div class="consolecontainer">
+        <!-- Forward, right, left buttons -->
+        <button onclick="move('forward')">Forward</button>
+        <button onclick="move('right')">Rotate Right</button>
+        <button onclick="move('left')">Rotate Left</button>
+        <button onclick="move('backward')">Backward</button>
+    </div>
+  
+    <div id = "phaser-div" class="gamecontainer">
+        <!-- Game grid for graphics -->
+    </div>
+    <script src="js/phaser.js">  
+    </script>
+    <script src="js/util/align.js">  
+    </script>
+    <script src="js/util/alignGrid.js">  
+    </script>
+    <script src="js/util/UIBlock.js">  
+    </script>
+    <script src="js/sceneMain.js"></script>
+    <script src="js/main.js"></script>
     <script src="js/src-min/ace.js"></script>
     <script src = "js/src-min/mode-plain_text.js"></script>
     <script src = "js/editor.js"></script>

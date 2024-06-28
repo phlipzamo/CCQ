@@ -14,5 +14,20 @@
         <button onclick="location.href='student.html'">View Students</button>
         <button onclick="location.href='home.html'">Home</button>
     </div>
+    <script>
+        // Restore settings from localStorage when the page loads
+        window.onload = function() {
+            var storedFontSize = localStorage.getItem('fontSize');
+            var storedHighContrast = localStorage.getItem('highContrast') === 'true';
+    
+            if (storedFontSize) {
+                document.documentElement.style.setProperty('--base-font-size', storedFontSize);
+            }
+    
+            if (storedHighContrast) {
+                document.documentElement.classList.add('high-contrast');
+            }
+        }
+    </script>
 </body>
 </html>
