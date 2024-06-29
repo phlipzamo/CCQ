@@ -3,5 +3,25 @@ let codeEditor = ace.edit("editorCode",{
     highlightActiveLine: true,
     showPrintMargin: false,
     theme: 'ace/theme/gob',
-    mode: 'ace/mode/javascript'
+    mode: 'ace/mode/javascript',
+    initialContent: 'hi'
 });
+document.getElementById('editorCode').style.fontSize='40px';
+codeEditor.setValue("");
+codeEditor.session.setUseWrapMode(true);
+function print(text){
+    var session = codeEditor.session;
+    var line = session.getLine(session.getLength()-1);
+    if (line ===""){
+        session.insert({
+            row: session.getLength(),
+            column: 0
+         }, text);
+    }
+    else{
+        session.insert({
+            row: session.getLength(),
+            column: 0
+         }, "\n" + text);
+    }
+}

@@ -8,12 +8,12 @@ class SceneMain extends Phaser.Scene {
     }
     preload()
     {
-    	this.load.image("asteroid", "assets/asteroid.png");
+    	this.load.image("asteroid", "assets/Asteroid1.png");
+        this.load.image("wormhole", "assets/Wormhole.png");
         this.load.atlas("ufo", "assets/ufo.png", "assets/ufo.json");
         this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
-
-        //this.load.audio("background", "assets/space.ogg")
+        this.load.audio("background", "assets/space.ogg")
     }
     create() {
         //console.log(Phaser.VERSION);
@@ -75,14 +75,14 @@ class SceneMain extends Phaser.Scene {
     }
     
     createLevel(){
-        //this.audio = this.sound.add("background");
+        this.audio = this.sound.add("background");
         this.level = this.cache.json.get('level').level1;
         console.log(this.level);
         this.cols= this.level.col;
         this.rows=this.level.row;
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
         this.aGrid.showNumbers();
-        this.earth=this.add.image(10,10,"earth");
+        this.earth=this.add.image(10,10,"wormhole");
         this.goalIndex = this.level.earth;
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth);
         this.ufo = this.physics.add.sprite(10,10,"ufo").setCollideWorldBounds(true, 1, 1, true);
@@ -157,6 +157,9 @@ class SceneMain extends Phaser.Scene {
             this.startY = this.ufo.y
             this.ufo.play("Backward");
         }, this);
+        /*this.input.keyboard.on('keydown-P', function() { 
+           this.playMusic();
+        }, this);*/
     }
     playMusic(){
         var musicConfig ={

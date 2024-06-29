@@ -7,16 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id ="editorCode" class="scriptcontainer">
+    <div class="scriptcontainer">
+        <div id ="editorCode" class="scriptcontainer">
       
+        </div>
+        <button onclick="">RUN</button>
     </div>
+    
 
     <div class="consolecontainer">
         <!-- Forward, right, left buttons -->
-        <button onclick="move('forward')">Forward</button>
-        <button onclick="move('right')">Rotate Right</button>
-        <button onclick="move('left')">Rotate Left</button>
-        <button onclick="move('backward')">Backward</button>
+        <button onclick="print('FORWARD')">Forward</button>
+        <button onclick="print('ROTATE_RIGHT')">Rotate Right</button>
+        <button onclick="print('ROTATE_LEFT')">Rotate Left</button>
+        <button onclick="print('BACKWARD')">Backward</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">

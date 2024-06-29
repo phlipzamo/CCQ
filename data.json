@@ -1,0 +1,105 @@
+{
+    "Adult":{
+        "id": "email",
+        "created_date": "01-02-2024",
+        "providers":{
+            "github": true,
+            "google": true,
+            "discord": true
+        },
+        "signin": "01-02-2024",
+        "settings":{
+            "highcontrast": false,
+            "Font": 5
+        },
+        "UUserID": "",
+        "levels_completed":{
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": false
+        },
+        "badges":{
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": false
+        },
+        "Children":{
+            "child1":{
+                "settings":{
+                    "highcontrast": false,
+                    "Font": 5
+                },
+                "ParentID": "",
+                "levels_completed":{
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                    "6": false
+                },
+                "badges":{
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                    "6": false
+                }
+            },
+            "child2":{
+                "settings":{
+                    "highcontrast": false,
+                    "Font": 5
+                },
+                "ParentID": "",
+                "levels_completed":{
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                    "6": false
+                },
+                "badges":{
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                    "6": false
+                }
+            }
+        }
+    },
+    "child":{
+        "settings":{
+            "highcontrast": false,
+            "Font": 5
+        },
+        "ParentID": "",
+        "levels_completed":{
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": false
+        },
+        "badges":{
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": false
+        }
+    }
+
+}
