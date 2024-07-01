@@ -1,5 +1,8 @@
 
-
+var runSelected = false;
+function setRun(){
+    runSelected = true;
+}
 
 class SceneMain extends Phaser.Scene {
     
@@ -8,7 +11,7 @@ class SceneMain extends Phaser.Scene {
     }
     preload()
     {
-    	this.load.image("asteroid", "assets/Asteroid1.png");
+    	this.load.atlas("astroid", "assets/astroid.png", "assets/astroid.json");
         this.load.image("wormhole", "assets/Wormhole.png");
         this.load.atlas("ufo", "assets/ufo.png", "assets/ufo.json");
         this.load.image("earth", "assets/earth.png");
@@ -16,10 +19,16 @@ class SceneMain extends Phaser.Scene {
         this.load.audio("background", "assets/space.ogg")
     }
     create() {
-        //console.log(Phaser.VERSION);
+        this.stackOfActions=[]
+        this.isMovingRight = false;
+        this.isMovingLeft = false;
+        this.isMovingBack = false;
+        this.isMovingForward = false;
+        this.running = false;
+        this.complete = true;
         this.createLevel();
         this.animationCreate();
-        this.keyBinds();
+    
         this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroidGroup) =>
         {
             this.setPlayer(this.level.ufo);
@@ -31,27 +40,56 @@ class SceneMain extends Phaser.Scene {
     }
     update() {
         this.earth.rotation += 0.005;
-        this.astroidGroup.getChildren().forEach(function(item, index){
+        /*this.astroidGroup.getChildren().forEach(function(item, index){
             item.rotation+=.015;
-        })
+        })*/
+    
+        if(this.running){
+            //if complete get next action
+            if(this.complete){
+                if(this.stackOfActions.length >0){
+                    var action = this.stackOfActions.shift();
+                    nextSelection();
+                    if(action == "F"){
+                        this.requestPlayerMoveForward();
+                    }
+                    else if (action == "B"){
+                       this.requestPlayerMoveBack();
+                    }
+                    else if (action == "R"){
+                       this.requestPlayerMoveRight()
+                    }
+                    else if (action == "L"){
+                        this.requestPlayerMoveLeft();
+                    }
+                    else{
+                        console.log("INVALID ACTION")
+                    }
+                } 
+                else{
+                    this.running = false;
+                    this.stopMusic();
+                }
+            }
 
-        if (this.moveR )
-        {
-            this.rotateRight();
+            if (this.isMovingRight )
+            {
+                this.rotateRight();
+            }
+            else if (this.isMovingLeft)
+            {
+                this.rotateLeft();
+            }
+            else if (this.isMovingBack)
+            {
+                this.moveBackward();
+            }
+            else if (this.isMovingForward)
+            {
+                this.moveForward();
+            }
         }
-        else if (this.moveL)
-        {
-            this.rotateLeft();
-        }
-        else if (this.moveB)
-        {
-            this.moveBackward();
-        }
-        else if (this.moveF)
-        {
-            this.moveForward();
-        }
-
+        
         if (this.goalIndex == this.playerIndex)
         {
             Align.sizeReduce(this.ufo);
@@ -59,23 +97,43 @@ class SceneMain extends Phaser.Scene {
                 this.setPlayer(this.level.ufo);
             }
         }
+        if(runSelected){
+            if(this.stackOfActions.length===0){
+                this.playMusic()
+                resetSelection();
+                this.scriptData=getScript();
+                this.parseData();
+                runSelected = false;
+            }
+            else{
+                //TODO Handle run selected while running
+            }
+        }
 
     }
-    setPlayer(gridPosistion){
-        this.moveR = false;
-        this.moveL = false;
-        this.moveB = false;
-        this.moveF = false;
-        this.ufo.body.reset(0,0);
-        this.playerIndex = gridPosistion;
-        this.playerAngle = 0;
-        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
-        this.ufo.angle = this.playerAngle;
-        this.ufo.play("idle");
+    parseData(){
+        const stringArray =  this.scriptData.split(/\r?\n/);
+        stringArray.forEach(element => {
+            if(element == "FORWARD"){
+                this.stackOfActions.push("F");
+            }
+            else if(element == "ROTATE_RIGHT"){
+                this.stackOfActions.push("R");
+            }
+            else if(element == "ROTATE_LEFT"){
+                this.stackOfActions.push("L");
+            }
+            else if(element == "BACKWARD"){
+                this.stackOfActions.push("B")
+            }
+        });
+        this.running = true;
+        this.complete = true;
+        this.scriptData = ""
     }
     
     createLevel(){
-        this.audio = this.sound.add("background");
+        
         this.level = this.cache.json.get('level').level1;
         console.log(this.level);
         this.cols= this.level.col;
@@ -86,24 +144,36 @@ class SceneMain extends Phaser.Scene {
         this.goalIndex = this.level.earth;
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth);
         this.ufo = this.physics.add.sprite(10,10,"ufo").setCollideWorldBounds(true, 1, 1, true);
-        this.ufo .body.onWorldBounds = true;
+        this.ufo.body.onWorldBounds = true;
         this.playerIndex = this.level.ufo;
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
-        this.moveR = false;
-        this.moveL = false;
-        this.moveB = false;
-        this.moveF = false;
         this.playerAngle = 0;
         
-        this.astroidGroup = this.physics.add.group();
+       /* this.astroidGroup = this.physics.add.group();
         console.log(this.level);
         for(var i =0; i<this.level.astroids.length; i++){
             var astroid=this.add.image(10,10,"asteroid");
             this.astroidGroup.add(astroid);
             this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid);
-        }
-       
+        }*/
+        this.astroid=this.physics.add.sprite(10,10,"astroid");
+            
+        this.aGrid.placeAndScaleAtIndex(1, this.astroid);
     }
+    setPlayer(gridPosistion){
+        this.isMovingRight = false;
+        this.isMovingLeft = false;
+        this.isMovingBack = false;
+        this.isMovingForward = false;
+        this.ufo.body.reset(0,0);
+        this.playerIndex = gridPosistion;
+        this.playerAngle = 0;
+        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+        this.ufo.angle = this.playerAngle;
+        this.ufo.play("idle");
+    }
+    
+    
     animationCreate(){
         this.anims.create({
             key: 'Forward',
@@ -135,33 +205,46 @@ class SceneMain extends Phaser.Scene {
             frameRate: 8,
             repeat: 0
         });
+        this.anims.create({
+            key: 'stop',
+            frames: this.anims.generateFrameNames('astroid', {start: 1, end: 1, zeroPad: 1, prefix: 'A', suffix: '.png'}),
+            frameRate: 8,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'Explode',
+            frames: this.anims.generateFrameNames('astroid', {start: 1, end: 13, zeroPad: 1, prefix: 'A', suffix: '.png'}),
+            frameRate: 8,
+            repeat: 0
+        });
     }
-    keyBinds(){
-        this.input.keyboard.on('keydown-A', function() { 
-            this.moveL= true;
-            this.ufo.play("Left");
-        }, this);
-        this.input.keyboard.on('keydown-D', function() { 
-            this.moveR= true;
-            this.ufo.play("Right");
-        }, this);
-        this.input.keyboard.on('keydown-W', function() { 
-            this.moveF= true;
-            this.startX = this.ufo.x
-            this.startY = this.ufo.y
-            this.ufo.play("Forward");
-        }, this);
-        this.input.keyboard.on('keydown-S', function() { 
-            this.moveB= true;
-            this.startX = this.ufo.x
-            this.startY = this.ufo.y
-            this.ufo.play("Backward");
-        }, this);
-        /*this.input.keyboard.on('keydown-P', function() { 
-           this.playMusic();
-        }, this);*/
+    
+    requestPlayerMoveForward(){
+        this.isMovingForward= true;
+        this.complete = false;
+        this.startX = this.ufo.x
+        this.startY = this.ufo.y
+        this.ufo.play("Forward");
+    }
+    requestPlayerMoveRight(){
+        this.isMovingRight= true;
+        this.complete = false;
+        this.ufo.play("Right");
+    }
+    requestPlayerMoveLeft(){
+        this.isMovingLeft= true;
+        this.complete = false;
+        this.ufo.play("Left");
+    }
+    requestPlayerMoveBack(){
+        this.isMovingBack= true;
+        this.complete = false;
+        this.startX = this.ufo.x
+        this.startY = this.ufo.y
+        this.ufo.play("Backward");
     }
     playMusic(){
+        this.audio = this.sound.add("background");
         var musicConfig ={
             mute: false,
             volume:1,
@@ -173,32 +256,35 @@ class SceneMain extends Phaser.Scene {
         }
         this.audio.play(musicConfig);
     }
+    stopMusic(){
+        this.audio.stop();
+    }
     moveForward(){
         if(this.playerAngle == 0){
-            this.moveF=this.moveUp();
+            this.isMovingForward=this.moveUp();
         }
         else if(this.playerAngle == 90){
-            this.moveF=this.moveRight();
+            this.isMovingForward=this.moveRight();
         }
         else if(this.playerAngle == -180 || this.playerAngle == 180){
-            this.moveF=this.moveDown();
+            this.isMovingForward=this.moveDown();
         }
         else if(this.playerAngle == -90){
-            this.moveF=this.moveLeft();
+            this.isMovingForward=this.moveLeft();
         }
     }
     moveBackward(){
         if(this.playerAngle == 0){
-            this.moveB=this.moveDown();
+            this.isMovingBack=this.moveDown();
         }
         else if(this.playerAngle == 90){
-            this.moveB=this.moveLeft();
+            this.isMovingBack=this.moveLeft();
         }
         else if(this.playerAngle == -180 || this.playerAngle == 180){
-            this.moveB=this.moveUp();
+            this.isMovingBack=this.moveUp();
         }
         else if(this.playerAngle == -90){
-            this.moveB=this.moveRight();
+            this.isMovingBack=this.moveRight();
         }
     }
     moveRight(){
@@ -209,6 +295,7 @@ class SceneMain extends Phaser.Scene {
             this.playerIndex+=1;
             this.ufo.play("idle");
             this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.complete= true;
             return false;
         }
         this.ufo.setVelocityX(90);
@@ -222,6 +309,7 @@ class SceneMain extends Phaser.Scene {
             this.playerIndex-=1;
             this.ufo.play("idle");
             this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.complete= true;
             return false;
         }
         this.ufo.setVelocityX(-90);
@@ -235,6 +323,7 @@ class SceneMain extends Phaser.Scene {
             this.playerIndex-=this.cols;
             this.ufo.play("idle");
             this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.complete= true;
             return false;
         }
         this.ufo.setVelocityY(-90);
@@ -248,6 +337,7 @@ class SceneMain extends Phaser.Scene {
             this.playerIndex+=this.cols;
             this.ufo.play("idle");
             this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.complete= true;
             return false;
         }
         this.ufo.setVelocityY(+90);
@@ -259,7 +349,8 @@ class SceneMain extends Phaser.Scene {
             this.playerAngle=this.ufo.angle;
             this.ufo.setAngularVelocity(0);
             this.ufo.play("idle");
-            this.moveL = false;
+            this.isMovingLeft = false;
+            this.complete= true;
         } else {
             this.ufo.setAngularVelocity(-90);
         }
@@ -270,7 +361,8 @@ class SceneMain extends Phaser.Scene {
             this.playerAngle=this.ufo.angle;
             this.ufo.setAngularVelocity(0);
             this.ufo.play("idle");
-            this.moveR = false;
+            this.isMovingRight = false;
+            this.complete= true;
         } else {
             this.ufo.setAngularVelocity(90);
         }

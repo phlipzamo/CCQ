@@ -13,9 +13,9 @@
     "wormholes": [
         {"start": 0,"end":1}
     ]
-    
   },
-"level2": {
+
+    "level2": {
     "row": 6,
     "col": 6,
     "ufo": 6,
