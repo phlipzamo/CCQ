@@ -1,8 +1,39 @@
 
+
 var runSelected = false;
+
 function setRun(){
     runSelected = true;
 }
+const TOKEN = Object.freeze({
+    WS: "WS", 
+    COMMENT: "COMMENT", 
+    NEWLINE:"NEWLINE",
+    NUMBER:"NUMBER",
+    STRING:"STRING",
+    FOR: "FOR",
+    KEYWORD:"KEYWORD",
+    FUNCTION:"FUNCTION",
+    ERROR:"ERROR",
+    TO:"TO",
+    COLON:"COLON",
+    INDENT1: "INDENT1",
+    INDENT2: "INDENT2",
+    INDENT3: "INDENT3",
+    INDENT4: "INDENT4",
+    INDENT5: "INDENT5",
+    INDENT6: "INDENT6",
+});
+const ufoMoves = Object.freeze({
+    FORWARD: "forward()", 
+    BACKWARD: "backward()", 
+    ROTATE_RIGHT:"rotate_right()",
+    ROTATE_LEFT:"rotate_left()",
+    SHOOT:"shoot()",
+    SCAN:"scan()",
+    TRACTORBEAM:"tractorbeam()",
+});
+const ufoMovesArr= ['forward()','rotate_right()','rotate_left()','backward()','shoot()','scan()','tractorbeam()'] 
 
 class SceneMain extends Phaser.Scene {
     
@@ -16,7 +47,8 @@ class SceneMain extends Phaser.Scene {
         this.load.atlas("ufo", "assets/ufo.png", "assets/ufo.json");
         this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
-        this.load.audio("background", "assets/space.ogg")
+        this.load.audio("background", "assets/space.ogg");
+        this.load.audio("wormhole","assets/Wormhole.wav");
     }
     create() {
         this.stackOfActions=[]
@@ -26,24 +58,55 @@ class SceneMain extends Phaser.Scene {
         this.isMovingForward = false;
         this.running = false;
         this.complete = true;
+        this.playingMusic= false;
         this.createLevel();
         this.animationCreate();
     
-        this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroidGroup) =>
+        this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroid) =>
+        {
+            astroid.play("Explode");
+            this.setPlayer(this.level.ufo);
+            this.audio.stop(); 
+        }
+    );
+        this.physics.world.on('worldbounds', (body, up, down, left, right) =>
         {
             this.setPlayer(this.level.ufo);
         });
-        this.physics.world.on('worldbounds', (body, up, down, left, right) =>
-            {
-                this.setPlayer(this.level.ufo);
-            });
+        this.lexer = moo.compile({
+            WS: /[ ]+/, // TODO tabs
+            COMMENT: /#.*/,
+            NEWLINE: { match: /\r|\r\n|\n/, lineBreaks: true },
+            NUMBER: [
+                /(?:0|[1-9][0-9]*)/,              // 123
+            ],
+            STRING: [
+                {match: /"""[^]*?"""/, lineBreaks: true, value: x => x.slice(3, -3)},
+                {match: /"(?:\\["\\rn]|[^"\\\n])*?"/, value: x => x.slice(1, -1)},
+                {match: /'(?:\\['\\rn]|[^'\\\n])*?'/, value: x => x.slice(1, -1)},
+            ],
+            FUNCTION: ufoMovesArr,
+            FOR: 'for',
+            TO: 'to',
+            KEYWORD: ['for', 'to'],
+            L_PAR: "(",
+            R_PAR: ")",
+            COLON: ":",
+            ERROR: /[A-Za-z_][A-Za-z0-9_]*/,
+            INDENT1: "temp",
+            INDENT2: "temp",
+            INDENT3: "temp",
+            INDENT4: "temp",
+            INDENT5: "temp",
+            INDENT6: "temp",
+          })
     }
     update() {
-        this.earth.rotation += 0.005;
-        /*this.astroidGroup.getChildren().forEach(function(item, index){
-            item.rotation+=.015;
-        })*/
-    
+        this.earth.rotation += 0.025;
+        this.astroidGroup.getChildren().forEach(function(item, index){
+            item.rotation+=.005;
+        })
+        
         if(this.running){
             //if complete get next action
             if(this.complete){
@@ -63,7 +126,7 @@ class SceneMain extends Phaser.Scene {
                         this.requestPlayerMoveLeft();
                     }
                     else{
-                        console.log("INVALID ACTION")
+                        console.log("not real action")
                     }
                 } 
                 else{
@@ -91,17 +154,23 @@ class SceneMain extends Phaser.Scene {
         }
         
         if (this.goalIndex == this.playerIndex)
-        {
+        {   
+            this.playWormholeMusic();
+            this.playingMusic = true;
             Align.sizeReduce(this.ufo);
             if(this.ufo.displayWidth <10){
                 this.setPlayer(this.level.ufo);
             }
         }
+        
         if(runSelected){
-            if(this.stackOfActions.length===0){
+            
+           if(this.stackOfActions.length===0){
                 this.playMusic()
                 resetSelection();
                 this.scriptData=getScript();
+                this.lexer.reset( this.scriptData);
+               
                 this.parseData();
                 runSelected = false;
             }
@@ -112,30 +181,166 @@ class SceneMain extends Phaser.Scene {
 
     }
     parseData(){
-        const stringArray =  this.scriptData.split(/\r?\n/);
-        stringArray.forEach(element => {
-            if(element == "FORWARD"){
-                this.stackOfActions.push("F");
-            }
-            else if(element == "ROTATE_RIGHT"){
-                this.stackOfActions.push("R");
-            }
-            else if(element == "ROTATE_LEFT"){
-                this.stackOfActions.push("L");
-            }
-            else if(element == "BACKWARD"){
-                this.stackOfActions.push("B")
-            }
-        });
-        this.running = true;
-        this.complete = true;
-        this.scriptData = ""
+        if( this.syntaxCheck()){
+            
+            var i =0;
+            while (this.tokens[i]){
+
+                if(this.tokens[i].type == TOKEN.FOR){
+                    var forToken =this.tokens[i];
+                    try {
+                        while(this.tokens[i].type != TOKEN.NUMBER){
+                            i++
+                        }
+                    } catch (error) {
+                        errorLine(forToken.line);
+                        console.log("Expect a number after 'for'! EX: for 1 to 5: ");
+                        return;
+                    }
+                    var startNumToken = this.tokens[i];
+                    try {
+                        while(this.tokens[i].type != TOKEN.TO){
+                            i++
+                        }
+                    } catch (error) {
+                        errorLine(startNumToken.line);
+                        console.log("Expect a 'to' after 'for "+startNumToken.value +"'! EX: for 1 to 5: ");
+                        return;
+                    }
+
+                    var toToken = this.tokens[i];
+                    try {
+                        while(this.tokens[i].type != TOKEN.NUMBER){
+                            i++
+                        }
+                    } catch (error) {
+                        errorLine(toToken.line);
+                        console.log("Expect a 'Number' after 'for "+startNumToken.value +" to '! EX: for 1 to 5: ");
+                        return;
+                    }
+                    var endNumToken = this.tokens[i];
+                    try {
+                        while(this.tokens[i].type != TOKEN.COLON){
+                            i++
+                        }
+                    } catch (error) {
+                        errorLine(endNumToken.line);
+                        console.log("Expect a ':' after 'for "+startNumToken.value +" to "+ endNumToken.value+"'! EX: for 1 to 5: ");
+                        return;
+                    }
+                    var colonToken = this.tokens[i];
+                    i++;
+                    try {
+                        while(this.tokens[i].type != TOKEN.NEWLINE){
+                            i++
+                        }
+                    } catch (error) {
+                        errorLine(colonToken.line);
+                        console.log("Expect newLine ");
+                        return;
+                    }
+                    i++;
+                    var forStart = i;
+                    for (let j = +startNumToken.value; j <= +endNumToken.value; j++) {
+                        i = forStart;
+                        try {
+                            while (this.tokens[i].type == TOKEN.INDENT1){
+                                i++;
+                                while (this.tokens[i].type != TOKEN.NEWLINE){
+                                    if(this.tokens[i].type == TOKEN.FUNCTION){
+                                        if(this.tokens[i].value == ufoMoves.FORWARD ){
+                                            this.stackOfActions.push("F");
+                                        }
+                                        else if(this.tokens[i].value == ufoMoves.ROTATE_RIGHT){
+                                            this.stackOfActions.push("R");
+                                        }
+                                        else if(this.tokens[i].value == ufoMoves.ROTATE_LEFT){
+                                            this.stackOfActions.push("L");
+                                        }
+                                        else if(this.tokens[i].value == ufoMoves.BACKWARD){
+                                            this.stackOfActions.push("B")
+                                        }
+                                    }
+                                    i++;
+                                }
+                                i++;
+                            }
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    }
+                }
+               try {
+                    if(this.tokens[i].type == TOKEN.FUNCTION){
+                        if(this.tokens[i].value == ufoMoves.FORWARD ){
+                            this.stackOfActions.push("F");
+                        }
+                        else if(this.tokens[i].value == ufoMoves.ROTATE_RIGHT){
+                            this.stackOfActions.push("R");
+                        }
+                        else if(this.tokens[i].value == ufoMoves.ROTATE_LEFT){
+                            this.stackOfActions.push("L");
+                        }
+                        else if(this.tokens[i].value == ufoMoves.BACKWARD){
+                            this.stackOfActions.push("B")
+                        }
+                    }
+               } catch (error) {
+                    console.log(error);
+               }
+               i++;
+            } 
+            this.running = true;
+            this.complete = true;
+            this.scriptData = ""
+        }
     }
-    
+    getNextToken(){
+
+    }
+    syntaxCheck(){
+        var isGood = true;
+        var wsCheck = false;
+        this.tokens = Array.from(this.lexer);
+        for (let i =0; i<this.tokens.length; i++) {
+            if(this.tokens[i].type == TOKEN.ERROR){
+                errorLine(this.tokens[i].line);
+                isGood = false;
+            }
+            if (wsCheck){
+                wsCheck =false;
+                if(this.tokens[i].type == TOKEN.WS){
+                    if(this.tokens[i].value == "    "){
+                        this.tokens[i].type= TOKEN.INDENT1;
+                    }
+                    else if(this.tokens[i].value == "        "){
+                        this.tokens[i].type= TOKEN.INDENT2;
+                    }
+                    else if(this.tokens[i].value == "            "){
+                        this.tokens[i].type= TOKEN.INDENT3;
+                    }
+                    else if(this.tokens[i].value == "                "){
+                        this.tokens[i].type= TOKEN.INDENT4;
+                    }
+                    else if(this.tokens[i].value == "                    "){
+                        this.tokens[i].type= TOKEN.INDENT5;
+                    }
+                    else if(this.tokens[i].value == "                        "){
+                        this.tokens[i].type= TOKEN.INDENT6;
+                    }
+                }
+            }
+            if(this.tokens[i].type == TOKEN.NEWLINE){
+                wsCheck = true;
+            }
+            
+        }
+        return isGood;
+    }
     createLevel(){
         
         this.level = this.cache.json.get('level').level1;
-        console.log(this.level);
+        
         this.cols= this.level.col;
         this.rows=this.level.row;
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
@@ -149,27 +354,32 @@ class SceneMain extends Phaser.Scene {
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
         this.playerAngle = 0;
         
-       /* this.astroidGroup = this.physics.add.group();
-        console.log(this.level);
+        this.astroidGroup = this.physics.add.group();
         for(var i =0; i<this.level.astroids.length; i++){
-            var astroid=this.add.image(10,10,"asteroid");
+            var astroid=this.physics.add.sprite(10,10,"astroid");
             this.astroidGroup.add(astroid);
             this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid);
-        }*/
-        this.astroid=this.physics.add.sprite(10,10,"astroid");
-            
-        this.aGrid.placeAndScaleAtIndex(1, this.astroid);
+        }
     }
     setPlayer(gridPosistion){
         this.isMovingRight = false;
         this.isMovingLeft = false;
         this.isMovingBack = false;
         this.isMovingForward = false;
-        this.ufo.body.reset(0,0);
         this.playerIndex = gridPosistion;
         this.playerAngle = 0;
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+        
+		this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.angle = this.playerAngle;
+        this.ufo.play("idle");
+    }
+    stopPlayer(){
+        this.isMovingRight = false;
+        this.isMovingLeft = false;
+        this.isMovingBack = false;
+        this.isMovingForward = false;
+        this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.play("idle");
     }
     
@@ -214,7 +424,7 @@ class SceneMain extends Phaser.Scene {
         this.anims.create({
             key: 'Explode',
             frames: this.anims.generateFrameNames('astroid', {start: 1, end: 13, zeroPad: 1, prefix: 'A', suffix: '.png'}),
-            frameRate: 8,
+            frameRate: 16,
             repeat: 0
         });
     }
@@ -255,6 +465,22 @@ class SceneMain extends Phaser.Scene {
             delay: 0
         }
         this.audio.play(musicConfig);
+    }
+    playWormholeMusic(){
+        if(!this.playingMusic){
+            this.wormholeAudio = this.sound.add("wormhole");
+            var musicConfig ={
+                mute: false,
+                volume:1,
+                rate: 1,
+                detune:0,
+                seek: 0,
+                loop: false,
+                delay: 0
+            }
+            this.wormholeAudio.play(musicConfig);
+        }
+        
     }
     stopMusic(){
         this.audio.stop();

@@ -25,7 +25,7 @@ class Align
 	}
 	static sizeReduce(obj)
 	{
-		obj.displayWidth=obj.displayWidth*.99;
+		obj.displayWidth=obj.displayWidth*.98;
 		obj.scaleY=obj.scaleX;
 	}
 }

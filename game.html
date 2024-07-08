@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="scriptcontainer">
-        <div id ="editorCode" class="scriptcontainer">
+        <div id ="editorCode" class="scriptcontainer" onclick="removeMarkers()">
       
         </div>
         <button onclick="setRun()">RUN</button>
@@ -17,10 +17,10 @@
 
     <div class="consolecontainer">
         <!-- Forward, right, left buttons -->
-        <button onclick="print('FORWARD')">Forward</button>
-        <button onclick="print('ROTATE_RIGHT')">Rotate Right</button>
-        <button onclick="print('ROTATE_LEFT')">Rotate Left</button>
-        <button onclick="print('BACKWARD')">Backward</button>
+        <button onclick="print('forward()')">Forward</button>
+        <button onclick="print('rotate_right()')">Rotate Right</button>
+        <button onclick="print('rotate_left()')">Rotate Left</button>
+        <button onclick="print('backward()')">Backward</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">
@@ -34,11 +34,13 @@
     </script>
     <script src="js/util/UIBlock.js">  
     </script>
+    <script src = "js/moo/moo.js"></script>
     <script src="js/sceneMain.js"></script>
     <script src="js/main.js"></script>
     <script src="js/src-min/ace.js"></script>
     <script src = "js/src-min/mode-plain_text.js"></script>
     <script src = "js/src-min/ext-language_tools.js"></script>
     <script src = "js/editor.js"></script>
+   
 </body>
 </html>

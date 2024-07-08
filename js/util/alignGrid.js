@@ -36,6 +36,7 @@ class AlignGrid
 	show()
 	{
 		this.graphics=this.scene.add.graphics();
+		this.graphics.depth = 10;
 		this.graphics.lineStyle(2,0xff0000);
 
 		 for (var i = 0; i < this.config.width; i+=this.cw) {
@@ -96,8 +97,7 @@ class AlignGrid
 		            	var numText=this.scene.add.text(0,0,count,{color:'#ff0000'});
 		            	numText.setOrigin(0.5,0.5);
 		            	this.placeAtIndex(count,numText);
-
-
+						numText.depth = 10;
 		            	count++;
 		            }
 		        }

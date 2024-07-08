@@ -244,3 +244,8 @@ form button {
     right: 0;
     border: 1px solid var(--editor-border);
 }
+.myMarker {
+    position:absolute;
+    background:rgb(255, 0, 0);
+    z-index:20
+  }
