@@ -12,10 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
 
     <script>
-
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
         const firebaseConfig = {
           apiKey: "AIzaSyCY-sgMJqTJWkrV5GEfSlj51fmr0eKUZ4s",
           authDomain: "cosmiccodequest.firebaseapp.com",
@@ -26,14 +22,11 @@
           measurementId: "G-YTB44CQTQ2"
         };
       
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
 
-      </script>
-
-      <script src="app.js" defer></script>
-
+    </script>
 </head>
+
 <body>
     <div class="container">
         <h1>HOME PAGE</h1>
@@ -58,6 +51,25 @@
                 document.documentElement.classList.add('high-contrast');
             }
         }
+    </script>
+
+    <script>
+        const auth = firebase.auth();
+        const signOutButton = document.getElementById('signOutButton');
+        signOutButton.onclick = () => console.log("Sign out button pressed");
+        signOutButton.onclick = () => auth.signOut();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // user is logged in
+                console.log("Login successful!");
+            }
+            else {
+                // user is not logged in
+                window.location.replace("https://cosmiccodequest.org/index.html");
+            }
+        });
+        // signOutButton.onClick ... => auth.signOut();
     </script>
 </body>
 </html>
