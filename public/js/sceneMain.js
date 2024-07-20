@@ -5,6 +5,8 @@ var runSelected = false;
 function setRun(){
     runSelected = true;
 }
+
+
 const TOKEN = Object.freeze({
     WS: "WS", 
     COMMENT: "COMMENT", 
@@ -338,8 +340,47 @@ class SceneMain extends Phaser.Scene {
         return isGood;
     }
     createLevel(){
+        var selectedLevel;
         
-        this.level = this.cache.json.get('level').level1;
+        selectedLevel = Number(localStorage.getItem('level'));
+       
+        switch(selectedLevel) {
+            case 1:
+                this.level = this.cache.json.get('level').level1;
+                break;
+            case 2:
+                this.level = this.cache.json.get('level').level2;
+                break;
+            case 3:
+                this.level = this.cache.json.get('level').level3;
+                break;
+            case 4:
+                this.level = this.cache.json.get('level').level4;
+                break;
+            case 5:
+                this.level = this.cache.json.get('level').level5;
+                break;
+            case 6:
+                this.level = this.cache.json.get('level').level6;
+                break;
+            case 7:
+                this.level = this.cache.json.get('level').level7;
+                break;
+            case 8:
+                this.level = this.cache.json.get('level').level8;
+                break;
+            case 9:
+                this.level = this.cache.json.get('level').level9;
+                break;
+            case 10:
+                this.level = this.cache.json.get('level').level10;
+                break;
+           
+            default:
+              this.level = this.cache.json.get('level').level1;
+          }
+       
+        
         
         this.cols= this.level.col;
         this.rows=this.level.row;
