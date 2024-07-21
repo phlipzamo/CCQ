@@ -57,21 +57,26 @@
 
                 createChildAccount.onclick = () => {
                     let enteredUsername = document.getElementById('username').textContent;
-                    if (child_accounts.where('username', 'array-contains', `${enteredUsername}`)) {
-                        informationTextBox.innerHTML = `<h3>Username is already in use.</h3>`;
-                        child_accounts.where('username', 'array-contains', `${enteredUsername}`).get().then((snapshot) => {
-                        snapshot.docs.forEach(doc => {
-                            console.log(doc.data())
-                        })
+                    var query = child_accounts.where('username', 'array-contains', `${enteredUsername}`)
+                    query.get().then(function(querySnapshot) {
+                        if (querySnapshot.empty) {
+                            console.log('nothing found');
+                        } else {
+                            console.log('found something');
+                        }
                     })
-                    } else {
-                        child_accounts.add({
-                        parent_uid: user.uid,
-                        username: document.getElementById('username'),
-                        password: document.getElementById('password')
-                        })
-                        informationTextBox.innerHTML = `<h3>Account successfully created.</h3>`;
-                    }
+
+                    // if () {
+                    //     informationTextBox.innerHTML = `<h3>Username is already in use.</h3>`;
+                        
+                    // } else {
+                    //     child_accounts.add({
+                    //     parent_uid: user.uid,
+                    //     username: document.getElementById('username'),
+                    //     password: document.getElementById('password')
+                    //     })
+                    //     informationTextBox.innerHTML = `<h3>Account successfully created.</h3>`;
+                    // }
                     
                 }
 
