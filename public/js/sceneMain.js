@@ -1,5 +1,57 @@
 
+const openModalButtons = document.querySelectorAll('[data-modal-open]')
+const closeModalButtons = document.querySelectorAll('[data-modal-close]')
+const output = document.querySelector('.output')
+const keys = document.querySelector('.number-grid')
 
+keys.addEventListener('click', e => {
+    if (e.target.matches('button')) {
+        const key = e.target
+        const action = key.dataset.action
+        const keyContent = key.textContent
+        const displayedNum = output.textContent
+        if (!action) {
+            if (displayedNum === '0') {
+                output.textContent = keyContent
+            }
+            else {
+                output.textContent = displayedNum + keyContent
+            }
+        }
+        else if (action === 'Del'){
+            if(output.textContent.length>1){
+                output.textContent = output.textContent.substring(0, output.textContent.length - 1);
+            }
+            else{
+                output.textContent ='0'
+            }
+        }
+        else if (action === 'Ent'){
+            output.textContent = '0'
+        }
+    }
+  })
+
+openModalButtons.forEach(button =>{
+    button.addEventListener('click',()=>{
+        const modal = document.querySelector(button.dataset.modalOpen)
+        openModel(modal)
+    })
+})
+closeModalButtons.forEach(button =>{
+    button.addEventListener('click',()=>{
+        const modal = button.closest('.modal')
+        closeModel(modal)
+    })
+})
+function openModel(modal){
+    if(modal==null) return
+    modal.classList.add('active')
+}
+function closeModel(modal){
+    if(modal==null) return
+    modal.classList.remove('active')
+}
 var runSelected = false;
 
 function setRun(){

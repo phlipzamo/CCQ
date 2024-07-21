@@ -25,6 +25,7 @@ codeEditor.setOptions({
   });
 codeEditor.setValue("");
 codeEditor.session.setUseWrapMode(true);
+codeEditor.setReadOnly(true);
 var lineSelected = 1;
 function print(text){
     var session = codeEditor.session;

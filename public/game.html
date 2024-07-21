@@ -7,20 +7,52 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
     <div class="scriptcontainer">
+       
         <div id ="editorCode" class="scriptcontainer" onclick="removeMarkers()">
       
         </div>
-        <button onclick="setRun()">RUN</button>
+        <div>
+            <button onclick="setRun()">Run</button>
+            <button onclick="">Delete Line</button>
+            <button onclick="">Clear All</button>
+            <button onclick="">Reset</button>
+        </div>
+        
     </div>
     
 
     <div class="consolecontainer">
+        <div class="modal" id="modal">
+            <div class ="modal-header">
+                How many times?
+            </div>
+            <div class = "modal-body">
+                <div class="output">0</div>
+                <div class = "number-grid">
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button>0</button>
+                    <button data-action = "Del">Del</button>
+                    <button data-action = "Ent" data-modal-close = "#modal">Ent</button>
+                </div>
+            </div>
+        </div>
         <!-- Forward, right, left buttons -->
-        <button onclick="print('forward()')">Forward</button>
-        <button onclick="print('rotate_right()')">Rotate Right</button>
-        <button onclick="print('rotate_left()')">Rotate Left</button>
-        <button onclick="print('backward()')">Backward</button>
+        <button data-modal-open = "#modal" onclick="print('forward()')">Forward</button>
+        <button data-modal-open = "#modal" onclick="print('rotate_right()')">Rotate Right</button>
+        <button data-modal-open = "#modal" onclick="print('rotate_left()')">Rotate Left</button>
+        <button data-modal-open = "#modal" onclick="print('backward()')">Backward</button>
+        <button data-modal-open = "#modal" onclick="">Shoot</button>
+        <button data-modal-open = "#modal" onclick="">Times</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">
