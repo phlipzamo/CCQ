@@ -62,14 +62,13 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 // user is logged in
-                console.log("Login successful!");
             }
             else {
                 // user is not logged in
                 window.location.replace("https://cosmiccodequest.org/index.html");
             }
         });
-        // signOutButton.onClick ... => auth.signOut();
     </script>
+    
 </body>
 </html>

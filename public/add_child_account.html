@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <form>
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username"><br><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password"><br><br>
+            <button type="button" id="loginButton">Login</button>
+        </form>
+        <button onclick="location.href='home.html'">Back to Home</button>
+    </div>
+
+    <script>
+        document.getElementById("loginButton").addEventListener("click", function() {
+            window.location.href = "home.html";
+        });
+    </script>
+</body>
+</html>
+
