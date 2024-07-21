@@ -56,27 +56,22 @@
                 child_accounts = db.collection('child_accounts');
 
                 createChildAccount.onclick = () => {
-                    let enteredUsername = document.getElementById('username').textContent;
+                    let enteredUsername = document.getElementById('username').value;
                     var query = child_accounts.where('username', 'array-contains', `${enteredUsername}`)
                     query.get().then(function(querySnapshot) {
-                        if (querySnapshot.empty) {
-                            console.log('nothing found');
+                        if ((querySnapshot.empty && document.getElementById('username').value != '') && document.getElementById('password').value != '') {
+                            child_accounts.add({
+                            parent_uid: user.uid,
+                            username: document.getElementById('username').value,
+                            password: document.getElementById('password').value
+                            })
+                            informationTextBox.innerHTML = `<h3>Account successfully created.</h3>`;
+                            console.log(document.getElementById('password').value);
+                            console.log(document.getElementById('username').value);
                         } else {
-                            console.log('found something');
+                            informationTextBox.innerHTML = `<h3>Username is already in use or username or password is empty.</h3>`;
                         }
                     })
-
-                    // if () {
-                    //     informationTextBox.innerHTML = `<h3>Username is already in use.</h3>`;
-                        
-                    // } else {
-                    //     child_accounts.add({
-                    //     parent_uid: user.uid,
-                    //     username: document.getElementById('username'),
-                    //     password: document.getElementById('password')
-                    //     })
-                    //     informationTextBox.innerHTML = `<h3>Account successfully created.</h3>`;
-                    // }
                     
                 }
 
