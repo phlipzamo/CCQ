@@ -5,24 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCY-sgMJqTJWkrV5GEfSlj51fmr0eKUZ4s",
+          authDomain: "cosmiccodequest.firebaseapp.com",
+          projectId: "cosmiccodequest",
+          storageBucket: "cosmiccodequest.appspot.com",
+          messagingSenderId: "1078215067126",
+          appId: "1:1078215067126:web:b62a0538ace8c99b1633d7",
+          measurementId: "G-YTB44CQTQ2"
+        };
+      
+        firebase.initializeApp(firebaseConfig);
+
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>Login</h1>
+        <h1>Create Child Account</h1>
         <form>
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username"><br><br>
             <label for="password">Password:</label><br>
             <input type="password" id="password" name="password"><br><br>
-            <button type="button" id="loginButton">Login</button>
+            <button type="button" id="createAccountButton">Create Account</button>
         </form>
+        <div id="informationTextBox"></div>
         <button onclick="location.href='home.html'">Back to Home</button>
     </div>
 
     <script>
-        document.getElementById("loginButton").addEventListener("click", function() {
-            window.location.href = "home.html";
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const createChildAccount = document.getElementById('createAccountButton');
+        const informationTextBox = document.getElementById('informationTextBox');
+
+
+        // Reference to Firestore child accounts collection:
+        let child_accounts;
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // user is logged in
+                child_accounts = db.collection('child_accounts');
+
+                createChildAccount.onclick = () => {
+                    let enteredUsername = document.getElementById('username').textContent;
+                    if (child_accounts.where('username', 'array-contains', `${enteredUsername}`)) {
+                        informationTextBox.innerHTML = `<h3>Username is already in use.</h3>`;
+                        child_accounts.where('username', 'array-contains', `${enteredUsername}`).get().then((snapshot) => {
+                        snapshot.docs.forEach(doc => {
+                            console.log(doc.data())
+                        })
+                    })
+                    } else {
+                        child_accounts.add({
+                        parent_uid: user.uid,
+                        username: document.getElementById('username'),
+                        password: document.getElementById('password')
+                        })
+                        informationTextBox.innerHTML = `<h3>Account successfully created.</h3>`;
+                    }
+                    
+                }
+
+                // Create "account successfully created" text
+            }
+            else {
+                // user is not logged in
+                window.location.replace("https://cosmiccodequest.org/index.html");
+            }
         });
+
+
     </script>
 </body>
 </html>

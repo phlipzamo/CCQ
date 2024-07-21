@@ -5,13 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCY-sgMJqTJWkrV5GEfSlj51fmr0eKUZ4s",
+          authDomain: "cosmiccodequest.firebaseapp.com",
+          projectId: "cosmiccodequest",
+          storageBucket: "cosmiccodequest.appspot.com",
+          messagingSenderId: "1078215067126",
+          appId: "1:1078215067126:web:b62a0538ace8c99b1633d7",
+          measurementId: "G-YTB44CQTQ2"
+        };
+      
+        firebase.initializeApp(firebaseConfig);
+
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>USER PAGE</h1>
-        <h2>Username: Coder123 | Level: 6</h2>
+        <div id="userDetails"></div>
         <button onclick="location.href='badges.html'">View Badges</button>
-        <button>Add Child Account</button>
+        <section id="adultsOnly" hidden="true">
+            <button onclick="location.href='add_child_account.html'">Add Child Account</button>
+        </section>
         <button onclick="location.href='home.html'">Home</button>
     </div>
     <script>
@@ -28,6 +50,26 @@
                 document.documentElement.classList.add('high-contrast');
             }
         }
+    </script>
+
+    <script>
+        const auth = firebase.auth();
+        const adultsOnly = document.getElementById('adultsOnly');
+        const userDetails = document.getElementById('userDetails');
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // user is logged in
+                adultsOnly.hidden = false;
+                userDetails.innerHTML = `<h2>${user.displayName}</h2>`;
+            }
+            else {
+                // user is not logged in
+                window.location.replace("https://cosmiccodequest.org/index.html");
+                adultsOnly.hidden = true;
+            }
+        });
     </script>
 </body>
 </html>
