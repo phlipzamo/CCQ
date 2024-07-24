@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Code Quest</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     
@@ -14,9 +15,10 @@
       
         </div>
         <div>
-            <button id ="run" onclick="setRun()">Run</button>
-            <button id ="delete" onclick="deleteLine()">Delete Line</button>
-            <button id ="clear"onclick="clearScript()">Clear All</button>
+            <button data-tooltip="Run the code" onclick="setRun()">RUN <i class="fas fa-play"></i></button>
+            <button data-tooltip="Delete the current line" onclick="deleteLine()">DELETE LINE <i class="fas fa-trash-alt"></i></button>
+            <button data-tooltip="Clear all lines" onclick="clearScript()">CLEAR ALL <i class="fas fa-eraser"></i></button>
+            <button class="info-button" data-tooltip="Information" data-modal-open = "#tutorial-modal" onclick="location.href='tutorial.html'"><i class="fas fa-info-circle"></i></button>
         </div>
         
     </div>
@@ -46,12 +48,12 @@
             </div>
         </div>
         <!-- Forward, right, left buttons -->
-        <button data-modal-open = "#modal" onclick="print('forward ')">Forward</button>
-        <button data-modal-open = "#modal" onclick="print('rotate_right ')">Rotate Right</button>
-        <button data-modal-open = "#modal" onclick="print('rotate_left ')">Rotate Left</button>
-        <button data-modal-open = "#modal" onclick="print('backward ')">Backward</button>
-        <button data-modal-open = "#modal" onclick="print('shoot ')">Shoot</button>
-        <button data-modal-open = "#modal" onclick="print('times')">Times</button>
+        <button data-modal-open = "#modal" data-tooltip="Move UFO forward one space" onclick="print('forward ')">FORWARD <i class="fas fa-arrow-up"></i></button>
+        <button data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the right" onclick="print('rotate_right ')">ROTATE RIGHT <i class="fas fa-redo"></i></button>
+        <button data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the left" onclick="print('rotate_left ')">ROTATE LEFT <i class="fas fa-undo"></i></button>
+        <button data-modal-open = "#modal" data-tooltip="Move UFO one space backward" onclick="print('backward ')">BACKWARD <i class="fas fa-arrow-down"></i></button>
+        <button data-modal-open = "#modal" data-tooltip="Shoot ahead" onclick="print('shoot ')">SHOOT <i class="fas fa-bullseye"></i></button>
+        <button data-modal-open = "#modal" data-tooltip="Repeat chosen action" onclick="print('times')">TIMES <i class="fas fa-times"></i></button>
         <button data-modal-open = "#modal" onclick="print('if ')">If</button>
     </div>
   
