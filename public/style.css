@@ -296,3 +296,129 @@ form button {
 .number-grid{
     padding: 10px 0px 0px 0px;
 }
+
+
+/* Tooltip container */
+button[data-tooltip] {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Tooltip text */
+button[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%; /* Position the tooltip above the button */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+/* Show the tooltip text when hovering over the button */
+button[data-tooltip]:hover::after {
+    opacity: 1;
+}
+
+
+
+.tutorial-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tutorial-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tutorial-header h1 {
+    font-size: 2.5rem;
+    color: #444;
+}
+
+.tutorial-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.tutorial-navigation button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    background: #007BFF;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tutorial-navigation button:hover {
+    background-color: #0056b3;
+}
+
+.tutorial-content {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+}
+
+.step {
+    display: none;
+}
+
+.step.active {
+    display: block;
+}
+
+.step img {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.arrow {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    border-radius: 3px;
+    user-select: none;
+    transition: background-color 0.3s ease;
+}
+
+.left-arrow {
+    left: 0;
+}
+
+.right-arrow {
+    right: 0;
+}
+
+.arrow:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
