@@ -14,10 +14,9 @@
       
         </div>
         <div>
-            <button onclick="setRun()">Run</button>
-            <button onclick="">Delete Line</button>
-            <button onclick="">Clear All</button>
-            <button onclick="">Reset</button>
+            <button id ="run" onclick="setRun()">Run</button>
+            <button id ="delete" onclick="deleteLine()">Delete Line</button>
+            <button id ="clear"onclick="clearScript()">Clear All</button>
         </div>
         
     </div>
@@ -42,17 +41,18 @@
                     <button>9</button>
                     <button>0</button>
                     <button data-action = "Del">Del</button>
-                    <button data-action = "Ent" data-modal-close = "#modal">Ent</button>
+                    <button data-action = "Ent" data-modal-close = "#modal" onclick="printNextTo(document.querySelector('.output').textContent)">Ent</button>
                 </div>
             </div>
         </div>
         <!-- Forward, right, left buttons -->
-        <button data-modal-open = "#modal" onclick="print('forward()')">Forward</button>
-        <button data-modal-open = "#modal" onclick="print('rotate_right()')">Rotate Right</button>
-        <button data-modal-open = "#modal" onclick="print('rotate_left()')">Rotate Left</button>
-        <button data-modal-open = "#modal" onclick="print('backward()')">Backward</button>
-        <button data-modal-open = "#modal" onclick="">Shoot</button>
-        <button data-modal-open = "#modal" onclick="">Times</button>
+        <button data-modal-open = "#modal" onclick="print('forward ')">Forward</button>
+        <button data-modal-open = "#modal" onclick="print('rotate_right ')">Rotate Right</button>
+        <button data-modal-open = "#modal" onclick="print('rotate_left ')">Rotate Left</button>
+        <button data-modal-open = "#modal" onclick="print('backward ')">Backward</button>
+        <button data-modal-open = "#modal" onclick="print('shoot ')">Shoot</button>
+        <button data-modal-open = "#modal" onclick="print('times')">Times</button>
+        <button data-modal-open = "#modal" onclick="print('if ')">If</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">

@@ -36,7 +36,7 @@ class AlignGrid
 	show()
 	{
 		this.graphics=this.scene.add.graphics();
-		this.graphics.depth = 10;
+		this.graphics.setDepth = 10;
 		this.graphics.lineStyle(2,0xff0000);
 
 		 for (var i = 0; i < this.config.width; i+=this.cw) {
@@ -69,6 +69,17 @@ class AlignGrid
 		this.placeAt(xx,yy,obj);
 
 	}
+	placeTextAtIndex(index,obj)
+	{
+		var yy=Math.floor(index/this.config.cols);
+		var xx=index-(yy*this.config.cols);
+		this.placeAt(xx,yy,obj);
+		var x2=this.cw*xx+this.cw/2;
+		var y2=this.ch*yy+this.ch/2;
+
+		obj.x=x2-obj.width/2;
+		obj.y=y2-obj.height/2;
+	}
 	placeAndScaleAtIndex(index,obj)
 	{
 		var yy=Math.floor(index/this.config.cols);
@@ -97,7 +108,7 @@ class AlignGrid
 		            	var numText=this.scene.add.text(0,0,count,{color:'#ff0000'});
 		            	numText.setOrigin(0.5,0.5);
 		            	this.placeAtIndex(count,numText);
-						numText.depth = 10;
+						numText.setDepth = 10;
 		            	count++;
 		            }
 		        }

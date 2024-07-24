@@ -29,19 +29,157 @@ codeEditor.setReadOnly(true);
 var lineSelected = 1;
 function print(text){
     var session = codeEditor.session;
-    var line = session.getLine(session.getLength()-1);
+    var cursor = codeEditor.selection.getCursor();
+    var currentLine = cursor.row;
+    var line = codeEditor.session.getLine(currentLine);
+    var loopIndentAmount= 0;
+    var indent="    "
+    var end = "end"
+    for(var i = currentLine+1; i<codeEditor.session.getLength(); i++){
+      lineContent = codeEditor.session.getLine(i);
+      if(lineContent.includes("end")){
+        loopIndentAmount++;
+      }
+    }
+    for(var i=0;i<loopIndentAmount; i++){
+      text = indent+text;
+      end = indent+end;
+    }
     if (line ===""){
         session.insert({
-            row: session.getLength(),
+            row: currentLine,
             column: 0
          }, text);
     }
     else{
-        session.insert({
-            row: session.getLength(),
+        if(cursor.column ===0 && cursor.row===0){
+          session.insert({
+            row: currentLine,
             column: 0
-         }, "\n" + text);
+          },text.replace(/\s/g, "")+" \n");
+          codeEditor.selection.moveToPosition({
+            row: currentLine,
+            column:  codeEditor.session.getLine(currentLine).length
+          });
+          return;
+        }
+        else{
+          codeEditor.selection.moveToPosition({
+            row: currentLine,
+            column:  codeEditor.session.getLine(currentLine).length
+          });
+          session.insert({
+            row: currentLine,
+            column: codeEditor.session.getLine(currentLine).length
+         }, "\n"+ text);
+         currentLine++;
+        }
     }
+
+    if (text.includes("times")){
+      session.insert({
+        row: currentLine,
+        column: codeEditor.session.getLine(currentLine).length
+      }, "\n"+end);
+      var endPosition = {
+        row: currentLine,
+        column: codeEditor.session.getLine(currentLine).length
+      };
+      
+      codeEditor.selection.moveToPosition(endPosition);
+    }
+}
+
+function printNextTo(text){
+  var session = codeEditor.session;
+  var cursor = codeEditor.selection.getCursor();
+  var currentLine = cursor.row;
+  var lineContent = codeEditor.session.getLine(currentLine);
+  var loopIndentAmount =0
+  if(lineContent.includes("times")){
+    for(var i = currentLine+1; i<codeEditor.session.getLength(); i++){
+      lineContent = codeEditor.session.getLine(i);
+      if(lineContent.includes("end")){
+        loopIndentAmount++;
+      }
+    }
+    session.insert({
+      row: currentLine,
+      column: (loopIndentAmount-1) * 4 
+    }, text+".");
+  }else{
+    session.insert({
+      row: currentLine,
+      column: codeEditor.session.getLine(currentLine).length
+    }, text);
+  }
+}
+function deleteLine(){
+  // Get the current cursor position
+  var cursor = codeEditor.selection.getCursor();
+  // Get the current line number
+  var currentLine = cursor.row;
+
+  var lineContent = codeEditor.session.getLine(currentLine);
+
+  codeEditor.session.doc.removeFullLines(currentLine, currentLine); 
+  var spaces = countWhitespace(lineContent)
+  var tabs=0;
+  if(spaces!= 0){
+    tabs = spaces/4;
+  }
+
+  if (lineContent.includes("end")){
+
+    for(var i = currentLine-1; i>=0; i--){
+      lineContent = codeEditor.session.getLine(i);
+     
+      if(lineContent.includes("times")){
+        if(tabs == countWhitespace(lineContent)/4){
+          codeEditor.session.doc.removeFullLines(i, i); 
+          return;
+        }
+       
+      }
+      codeEditor.session.replace(
+        new ace.Range(i, 0, i, codeEditor.session.getLine(i).length),
+        lineContent.substring(4)
+      );
+    }
+  }
+  else if(lineContent.includes("times")){
+    for(var i = currentLine; i<codeEditor.session.getLength(); i++){
+      lineContent = codeEditor.session.getLine(i);
+      if(lineContent.includes("end")){
+        codeEditor.session.doc.removeFullLines(i, i); 
+        return;
+      }
+    }
+  }
+  codeEditor.selection.moveToPosition({
+    row: currentLine-1,
+    column:  codeEditor.session.getLine(currentLine-1).length
+  });
+}
+function countWhitespace(str) {
+  // Initialize a counter variable
+  var whitespaceCount = 0;
+  // Loop through each character in the string
+  for (var i = 0; i < str.length; i++) {
+    // Check if the character is whitespace using the built-in isWhitespace() method (not directly supported in JavaScript)
+    if (str[i].match(/\s/)) { // Regex to match whitespace characters
+      whitespaceCount++;
+    }
+  }
+
+  // Return the total count of whitespace characters
+  return whitespaceCount;
+}
+function clearScript(){
+  var totalLines = codeEditor.session.doc.getLength();
+
+  // Remove all full lines (including line numbers)
+  codeEditor.session.doc.removeFullLines(0, totalLines); 
 }
 function getScript(){
     var myCode = codeEditor.getSession().getValue();
