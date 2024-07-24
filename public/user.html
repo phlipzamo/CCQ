@@ -60,18 +60,22 @@
         const userDetails = document.getElementById('userDetails');
         const db = firebase.firestore();
 
+        // Adult account, anonymous account, child accounts, ...
+
         auth.onAuthStateChanged(user => {
-            if (user) {
+            if (user.displayName != null) {
                 // user is logged in
                 adultsOnly.hidden = false;
                 userDetails.innerHTML = `<h2>${user.displayName}</h2>`;
-            }
+            } 
             else {
                 // user is not logged in
                 window.location.replace("https://cosmiccodequest.org/index.html");
                 adultsOnly.hidden = true;
             }
         });
+
+        console.log('test');
     </script>
 </body>
 </html>
