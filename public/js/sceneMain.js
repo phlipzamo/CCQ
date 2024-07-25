@@ -48,8 +48,8 @@ function openModel(modal){
     if(modal==null) return
     modal.classList.add('active')
     var runButton = document.getElementById("run");
-var deleteButton = document.getElementById("delete");
-var clearButton = document.getElementById("clear");
+    var deleteButton = document.getElementById("delete");
+    var clearButton = document.getElementById("clear");
     runButton.disabled= true;
     deleteButton.disabled = true;
     clearButton.disabled = true;
@@ -58,8 +58,8 @@ function closeModel(modal){
     if(modal==null) return
     modal.classList.remove('active')
     var runButton = document.getElementById("run");
-var deleteButton = document.getElementById("delete");
-var clearButton = document.getElementById("clear");
+    var deleteButton = document.getElementById("delete");
+    var clearButton = document.getElementById("clear");
     runButton.disabled= false;
     deleteButton.disabled = false;
     clearButton.disabled = false;
@@ -484,7 +484,7 @@ class SceneMain extends Phaser.Scene {
         
         this.astroidGroup = this.physics.add.group();
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
-        this.aGrid.showNumbers();
+        this.aGrid.show();
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth);
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
         for(var i =0; i<this.level.astroids.length; i++){
