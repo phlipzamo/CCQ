@@ -44,18 +44,17 @@
                     <button>9</button>
                     <button>0</button>
                     <button data-action = "Del">Del</button>
-                    <button data-action = "Ent" data-modal-close = "#modal" onclick="printNextTo(document.querySelector('.output').textContent)">Ent</button>
+                    <button data-action = "Ent" data-modal-close = "#modal" >Ent</button>
                 </div>
             </div>
         </div>
         <!-- Forward, right, left buttons -->
-        <button data-modal-open = "#modal" data-tooltip="Move UFO forward one space" onclick="print('forward ')">FORWARD <i class="fas fa-arrow-up"></i></button>
-        <button data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the right" onclick="print('rotate_right ')">ROTATE RIGHT <i class="fas fa-redo"></i></button>
-        <button data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the left" onclick="print('rotate_left ')">ROTATE LEFT <i class="fas fa-undo"></i></button>
-        <button data-modal-open = "#modal" data-tooltip="Move UFO one space backward" onclick="print('backward ')">BACKWARD <i class="fas fa-arrow-down"></i></button>
-        <button data-modal-open = "#modal" data-tooltip="Shoot ahead" onclick="print('shoot ')">SHOOT <i class="fas fa-bullseye"></i></button>
-        <button data-modal-open = "#modal" data-tooltip="Repeat chosen action" onclick="print('times')">TIMES <i class="fas fa-times"></i></button>
-        <button data-modal-open = "#modal" onclick="print('if ')">If</button>
+        <button id= "forward" data-modal-open = "#modal" data-tooltip="Move UFO forward one space" onclick="print('forward ')">FORWARD <i class="fas fa-arrow-up"></i></button>
+        <button id= "right" data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the right" onclick="print('rotate_right ')">ROTATE RIGHT <i class="fas fa-redo"></i></button>
+        <button id= "left" data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the left" onclick="print('rotate_left ')">ROTATE LEFT <i class="fas fa-undo"></i></button>
+        <button id= "shoot"  data-tooltip="Shoot ahead" onclick="print('shoot 1')">SHOOT <i class="fas fa-bullseye"></i></button>
+        <button id= "times" data-modal-open = "#modal" data-tooltip="Repeat chosen action" onclick="print('times')">TIMES <i class="fas fa-times"></i></button>
+        <button id= "if" data-modal-open = "#modal" onclick="print('if ')">If</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">

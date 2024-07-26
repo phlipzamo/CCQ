@@ -40,29 +40,50 @@ openModalButtons.forEach(button =>{
 })
 closeModalButtons.forEach(button =>{
     button.addEventListener('click',()=>{
+        if(output.textContent === '0'){return;}
         const modal = button.closest('.modal')
         closeModel(modal)
+        printNextTo(output.textContent);
     })
 })
 function openModel(modal){
     if(modal==null) return
     modal.classList.add('active')
-    var runButton = document.getElementById("run");
-    var deleteButton = document.getElementById("delete");
-    var clearButton = document.getElementById("clear");
-    runButton.disabled= true;
-    deleteButton.disabled = true;
-    clearButton.disabled = true;
+    disableBtns();
 }
+function disableBtns(){
+    this.disableBtn("run");
+    this.disableBtn("delete");
+    this.disableBtn("clear");
+    this.disableBtn("forward");
+    this.disableBtn("right");
+    this.disableBtn("left");
+    this.disableBtn("times");
+    this.disableBtn("if");
+}
+function disableBtn(name){
+    var button = document.getElementById(name);
+    button.disabled= true;
+}
+function enableBtns(){
+    this.enableBtn("run");
+    this.enableBtn("delete");
+    this.enableBtn("clear");
+    this.enableBtn("forward");
+    this.enableBtn("right");
+    this.enableBtn("left");
+    this.enableBtn("times");
+    this.enableBtn("if");
+}
+function enableBtn(name){
+    var button = document.getElementById(name);
+    button.disabled= false;
+}
+
 function closeModel(modal){
     if(modal==null) return
     modal.classList.remove('active')
-    var runButton = document.getElementById("run");
-    var deleteButton = document.getElementById("delete");
-    var clearButton = document.getElementById("clear");
-    runButton.disabled= false;
-    deleteButton.disabled = false;
-    clearButton.disabled = false;
+    enableBtns();
 }
 var runSelected = false;
 
@@ -109,7 +130,106 @@ const ufoMoves = Object.freeze({
     TRACTORBEAM:"tractorbeam",
 });
 const ufoMovesArr= ['forward','rotate_right','rotate_left','backward','shoot','scan()','tractorbeam()'] 
+class Laser extends Phaser.Physics.Arcade.Sprite
+{
+    constructor (scene, x, y)
+    {
+        super(scene, x, y, 'laser');
+        
+    }
 
+    fire (x, y, playerAngle)
+    {
+        this.body.reset(x, y);
+
+        this.setActive(true);
+        this.setVisible(true);
+
+        if(playerAngle == 0){
+            this.angle = 0;
+            this.setVelocityY(-300);
+        }
+        else if(playerAngle == 90){
+            this.angle = 90;
+            this.setVelocityX(300);
+        }
+        else if(playerAngle == -180 || playerAngle == 180){
+            this.angle = 180;
+            this.setVelocityY(300);
+        }
+        else if(playerAngle == -90){
+            this.angle = -90;
+            this.setVelocityX(-300);
+        }
+        
+    }
+
+    preUpdate (time, delta)
+    {
+        super.preUpdate(time, delta);
+
+        if(this.angle == 0){
+            if (this.y <= 30) {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+        }
+        else if(this.angle == 90){
+            if (this.x >= 500) {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+        }
+        else if(this.angle== -180 || this.angle == 180){
+            if (this.y >= 600) {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+        }
+        else if(this.angle == -90){
+            if (this.x <= 0) {
+                this.setActive(false);
+                this.setVisible(false);
+            }
+        }
+        
+    }
+}
+
+class Lasers extends Phaser.Physics.Arcade.Group
+{
+    constructor (scene)
+    {
+        super(scene.physics.world, scene);
+
+        this.createMultiple({
+            frameQuantity: 30,
+            key: 'laser',
+            active: false,
+            visible: false,
+            classType: Laser
+        });
+    }
+
+    fireLaser (x, y, playerAngle)
+    {
+        const laser = this.getFirstDead(false);
+
+        if (laser)
+        {
+            laser.fire(x, y, playerAngle);
+        }
+    }
+    isActive(){
+        var iAmActive = false
+        this.getChildren().forEach(function(laser) {
+            if(laser.active){
+                iAmActive=true;
+            }
+        }, this);
+        return iAmActive;
+    }
+}
 class SceneMain extends Phaser.Scene {
     
     constructor() {
@@ -119,18 +239,22 @@ class SceneMain extends Phaser.Scene {
     {
     	this.load.atlas("astroid", "assets/astroid.png", "assets/astroid.json");
         this.load.image("wormhole", "assets/Wormhole.png");
-        this.load.atlas("ufo", "assets/ufo.png", "assets/ufo.json");
+        this.load.atlas("ufo", "assets/cowufo.png", "assets/cowufo.json");
         this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
         this.load.audio("background", "assets/space.ogg");
         this.load.audio("wormhole","assets/Wormhole.wav");
+        this.load.image("laser", "assets/Laser.png");
     }
     create() {
+        this.lasers = new Lasers(this);
         this.stackOfActions=[]
         this.isMovingRight = false;
         this.isMovingLeft = false;
         this.isMovingBack = false;
         this.isMovingForward = false;
+        this.isShooting= false;
+        this.HitAstroid=false;
         this.running = false;
         this.complete = true;
         this.playingMusic= false;
@@ -144,14 +268,35 @@ class SceneMain extends Phaser.Scene {
             //this.setPlayer(this.level.ufo);
             this.audio.stop(); 
             this.uiFailedGroup.setVisible(true);
+            disableBtns();
+        });
+        this.physics.add.overlap(this.lasers, this.astroidGroup, (laser, astroid) =>
+        {
+            astroid.play("Explode");
+            astroid.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+                if(this.complete = true){return;}
+                this.hideAstroid(astroid);
+                //astroid.destroy();
+                this.complete = true;
+                this.HitAstroid=false;
+            }, this);
+            this.HitAstroid=true;
+            laser.destroy();
+            
+            //this.stopPlayer()
+            //this.setPlayer(this.level.ufo);
+            //this.audio.stop(); 
+            //this.uiFailedGroup.setVisible(true);
+            //disableScriptBtns();
         }
-    );
+        );
         this.physics.world.on('worldbounds', (body, up, down, left, right) =>
         {
             this.stopPlayer()
             //this.setPlayer(this.level.ufo);
             this.audio.stop();
             this.uiFailedGroup.setVisible(true);
+            disableBtns();
         });
         this.lexer = moo.compile({
             WS: /[ ]+/, // TODO tabs
@@ -183,6 +328,7 @@ class SceneMain extends Phaser.Scene {
           })
     }
     update() {
+        
         this.earth.rotation += 0.025;
         this.astroidGroup.getChildren().forEach(function(item, index){
             item.rotation+=.005;
@@ -193,18 +339,21 @@ class SceneMain extends Phaser.Scene {
             if(this.complete){
                 if(this.stackOfActions.length >0){
                     var action = this.stackOfActions.shift();
-                    nextSelection();
-                    if(action == "F"){
+                    setSelection(action.line);
+                    if(action.action == "F"){
                         this.requestPlayerMoveForward();
                     }
-                    else if (action == "B"){
+                    else if (action.action == "B"){
                        this.requestPlayerMoveBack();
                     }
-                    else if (action == "R"){
+                    else if (action.action == "R"){
                        this.requestPlayerMoveRight()
                     }
-                    else if (action == "L"){
+                    else if (action.action == "L"){
                         this.requestPlayerMoveLeft();
+                    }
+                    else if (action.action == "S"){
+                        this.requestPlayerShoot();
                     }
                     else{
                         console.log("not real action")
@@ -219,6 +368,7 @@ class SceneMain extends Phaser.Scene {
                         //this.setPlayer(this.level.ufo);
                         this.audio.stop(); 
                         this.uiFailedGroup.setVisible(true);
+                        disableBtns();
                     }
 
                 }
@@ -240,6 +390,13 @@ class SceneMain extends Phaser.Scene {
             {
                 this.moveForward();
             }
+            else if(this.isShooting){
+                if(!this.lasers.isActive()){
+                    if(!this.HitAstroid){
+                        this.complete = true;
+                    }   
+                }
+            }
         }
         
         if (this.goalIndex == this.playerIndex)
@@ -249,6 +406,7 @@ class SceneMain extends Phaser.Scene {
             Align.sizeReduce(this.ufo);
             if(this.ufo.displayWidth <10){
                 this.uiSuccessGroup.setVisible(true); 
+                disableBtns();
             }
         }
         
@@ -316,6 +474,10 @@ class SceneMain extends Phaser.Scene {
                 i++;
                 this.pushNumberOfActions(i, "B")
             }
+            else if(this.tokens[i].value == ufoMoves.SHOOT){
+                i++;
+                this.pushNumberOfActions(i, "S")
+            }
             i++;
         }
         else if(this.tokens[i].type == TOKEN.NUMBER){
@@ -382,7 +544,7 @@ class SceneMain extends Phaser.Scene {
     pushNumberOfActions(i, action){
         if(this.tokens[i].type == TOKEN.NUMBER){
             for(var j = 0; j<this.tokens[i].value; j++){
-                this.stackOfActions.push(action);
+                this.stackOfActions.push({action:action,line: this.tokens[i].line});
             }
         }
     }
@@ -484,16 +646,30 @@ class SceneMain extends Phaser.Scene {
         
         this.astroidGroup = this.physics.add.group();
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
-        this.aGrid.show();
-        this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth);
-        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
-        for(var i =0; i<this.level.astroids.length; i++){
-            var astroid=this.physics.add.sprite(10,10,"astroid");
-            this.astroidGroup.add(astroid);
-            this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid);
-        }
+        this.aGrid.show("0x05ed04");
+        this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth,.8);
+        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
+        this.createAstroids();
         this.createPauseScreen();
         this.createSuccessScreen();
+    }
+    createAstroids(){
+        for(var i =0; i<this.level.astroids.length; i++){
+            var astroid=this.physics.add.sprite(10,10,"astroid");
+            astroid.setDepth(0);
+            this.astroidGroup.add(astroid);
+            this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid,.8);
+        }
+    }
+    hideAstroid(astroid){
+        astroid.setVisible(false);
+        astroid.body.reset(-64,-64);
+    }
+    unhideAllAstroid(){
+        for(var i =0; i<this.level.astroids.length; i++){
+            this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, this.astroidGroup.getChildren()[i],.8);
+            this.astroidGroup.getChildren()[i].setVisible(true);
+        }
     }
     createPauseScreen(){
         this.uiFailedGroup = this.add.group();
@@ -507,7 +683,10 @@ class SceneMain extends Phaser.Scene {
         txt_failed.setDepth = 30;
         var resetButton =this.add.text(0,0, "Reset?",{fontSize: 40, color:"#FF0000", stroke: "#FFFFFF", strokeThickness: 4 })
         .setInteractive()
-        .on('pointerdown', () => this.setPlayer(this.level.ufo))
+        .on('pointerdown', () => {this.setPlayer(this.level.ufo);
+            //this.astroidGroup.clear(true, true);
+            this.unhideAllAstroid();
+        })
         .on('pointerover', () => this.enterButtonHoverState(resetButton) )
         .on('pointerout', () => this.enterButtonRestState(resetButton) );
         this.uiGrid.placeTextAtIndex(4, resetButton);
@@ -517,6 +696,7 @@ class SceneMain extends Phaser.Scene {
         this.uiFailedGroup.add(txt_failed);
         this.uiFailedGroup.add(resetButton);
         this.uiFailedGroup.setVisible(false); 
+        
     }
     createSuccessScreen(){
         this.uiSuccessGroup = this.add.group();
@@ -556,9 +736,11 @@ class SceneMain extends Phaser.Scene {
         this.isMovingLeft = false;
         this.isMovingBack = false;
         this.isMovingForward = false;
+        this.isShooting= false;
+        this.HitAstroid=false;
         this.playerIndex = gridPosistion;
         this.playerAngle = 0;
-        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+        this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
         
 		this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.angle = this.playerAngle;
@@ -567,10 +749,13 @@ class SceneMain extends Phaser.Scene {
             astroid.play("stop");
         },this);
         this.uiFailedGroup.setVisible(false);
+        enableBtns();
     }
     stopPlayer(){
         this.isMovingRight = false;
         this.isMovingLeft = false;
+        this.isShooting= false;
+        this.HitAstroid=false;
         this.isMovingBack = false;
         this.isMovingForward = false;
         this.running = false;
@@ -585,31 +770,26 @@ class SceneMain extends Phaser.Scene {
     animationCreate(){
         this.anims.create({
             key: 'Forward',
-            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 5, zeroPad: 1, prefix: 'ufoF', suffix: '.png'}),
+            frames: this.anims.generateFrameNames('ufo', {start: 0, end:7, zeroPad: 1, prefix: 'Forward', suffix: '.png'}),
             frameRate: 8,
             repeat: 0
         });
-        this.anims.create({
-            key: 'Backward',
-            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 6, zeroPad: 1, prefix: 'ufoB', suffix: '.png'}),
-            frameRate: 8,
-            repeat: 0
-        });
+        
         this.anims.create({
             key: 'Left',
-            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 6, zeroPad: 1, prefix: 'ufoR', suffix: '.png'}),
+            frames: this.anims.generateFrameNames('ufo', {start: 1, end: 8, zeroPad: 1, prefix: 'Left', suffix: '.png'}),
             frameRate: 8,
             repeat: 0
         });
         this.anims.create({
             key: 'Right',
-            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 6, zeroPad: 1, prefix: 'ufoL', suffix: '.png'}),
+            frames: this.anims.generateFrameNames('ufo', {start: 1, end: 8, zeroPad: 1, prefix: 'Right', suffix: '.png'}),
             frameRate: 8,
             repeat: 0
         });
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 0, zeroPad: 1, prefix: 'ufoL', suffix: '.png'}),
+            frames: this.anims.generateFrameNames('ufo', {start: 0, end: 0, zeroPad: 1, prefix: 'Forward', suffix: '.png'}),
             frameRate: 8,
             repeat: 0
         });
@@ -643,6 +823,11 @@ class SceneMain extends Phaser.Scene {
         this.isMovingLeft= true;
         this.complete = false;
         this.ufo.play("Left");
+    }
+    requestPlayerShoot(){
+        this.isShooting= true;
+        this.complete = false;
+        this.lasers.fireLaser(this.ufo.x, this.ufo.y - 20, this.playerAngle);
     }
     requestPlayerMoveBack(){
         this.isMovingBack= true;
@@ -718,7 +903,7 @@ class SceneMain extends Phaser.Scene {
             this.ufo.setVelocityX(0);
             this.playerIndex+=1;
             this.ufo.play("idle");
-            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo, .9);
             this.complete= true;
             return false;
         }
@@ -732,7 +917,7 @@ class SceneMain extends Phaser.Scene {
             this.ufo.setVelocityX(0);
             this.playerIndex-=1;
             this.ufo.play("idle");
-            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo, .9);
             this.complete= true;
             return false;
         }
@@ -746,7 +931,7 @@ class SceneMain extends Phaser.Scene {
             this.ufo.setVelocityY(0);
             this.playerIndex-=this.cols;
             this.ufo.play("idle");
-            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo, .9);
             this.complete= true;
             return false;
         }
@@ -760,7 +945,7 @@ class SceneMain extends Phaser.Scene {
             this.ufo.setVelocityY(0);
             this.playerIndex+=this.cols;
             this.ufo.play("idle");
-            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo);
+            this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo, .9);
             this.complete= true;
             return false;
         }

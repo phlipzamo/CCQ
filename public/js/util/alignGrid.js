@@ -52,6 +52,25 @@ class AlignGrid
 
 		  this.graphics.strokePath();
 	}
+	show(color)
+	{
+		this.graphics=this.scene.add.graphics();
+		this.graphics.setDepth = 10;
+		this.graphics.lineStyle(2,color);
+
+		 for (var i = 0; i < this.config.width; i+=this.cw) {
+		            this.graphics.moveTo(i,0);
+		            this.graphics.lineTo(i,this.config.height);
+		        }
+
+		  for (var i = 0; i < this.config.height; i+=this.ch) {
+		            this.graphics.moveTo(0,i);
+		            this.graphics.lineTo(this.config.width,i);
+		        }
+
+
+		  this.graphics.strokePath();
+	}
 	placeAt(xx,yy,obj)
 	{
 		//calc position based upon the cellwidth and cellheight
@@ -80,13 +99,13 @@ class AlignGrid
 		obj.x=x2-obj.width/2;
 		obj.y=y2-obj.height/2;
 	}
-	placeAndScaleAtIndex(index,obj)
+	placeAndScaleAtIndex(index,obj,scale)
 	{
 		var yy=Math.floor(index/this.config.cols);
 		var xx=index-(yy*this.config.cols);
 
 		this.placeAt(xx,yy,obj);
-		obj.displayWidth=this.cw*.8;
+		obj.displayWidth=this.cw*scale;
 		obj.scaleY=obj.scaleX;
 	}
 	indexPosition(index)

@@ -193,6 +193,10 @@ function nextSelection(){
     codeEditor.selection.moveCursorToPosition({row: lineSelected, column: 0});
     codeEditor.selection.selectLine();
 }
+function setSelection(line){
+  codeEditor.selection.moveCursorToPosition({row: line-1, column: 0});
+  codeEditor.selection.selectLine();
+}
 function errorLine(linenumber){
   var Range = ace.require("ace/range").Range
   codeEditor.session.addMarker(new Range(linenumber-1, 0, linenumber-1,1), "myMarker", "fullLine");

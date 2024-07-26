@@ -12,7 +12,7 @@ if (isMobile == -1) {
         physics: {
             default: 'arcade',
             arcade: {
-                debug: false
+                debug: true
             }
         },
         scene: [SceneMain],
