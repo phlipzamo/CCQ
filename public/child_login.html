@@ -49,8 +49,11 @@
         loginButton.onclick = () => {
             let enteredUsername = document.getElementById('username').value;
             let password = document.getElementById('password').value;
-            var query = child_accounts.where("username", "==", `${enteredUsername}`).where("password", "==", `${password}`);
-            query.get().then(function(querySnapshot) {
+            if (enteredUsername == "" && password == "") {
+                informationTextBox.innerHTML = `<h3>Username or password incorrect.</h3>`;
+            } else {
+                var query = child_accounts.where("username", "==", `${enteredUsername}`).where("password", "==", `${password}`);
+                query.get().then(function(querySnapshot) {
                         if (querySnapshot.empty) {
                             informationTextBox.innerHTML = `<h3>Username or password incorrect.</h3>`;
                         } else {
@@ -58,6 +61,8 @@
                             window.location.replace("https://cosmiccodequest.org/home.html");
                         }
                     })
+            }
+            
         }
     </script>
 </body>
