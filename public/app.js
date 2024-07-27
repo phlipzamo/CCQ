@@ -23,5 +23,3 @@ function getCookie(name) {
 
     return result;
 }
-
-// setCookie("email", "test@test.com", 7);
