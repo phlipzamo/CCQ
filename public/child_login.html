@@ -58,6 +58,7 @@
                             informationTextBox.innerHTML = `<h3>Username or password incorrect.</h3>`;
                         } else {
                             document.cookie = `username=${enteredUsername}`;
+                            document.cookie = 'isChildAccount=true';
                             window.location.replace("https://cosmiccodequest.org/home.html");
                         }
                     })

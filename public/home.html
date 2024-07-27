@@ -58,6 +58,7 @@
         const signOutButton = document.getElementById('signOutButton');
         signOutButton.onclick = () => {
             document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "isChildAccount=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             auth.signOut().then(() => window.location.replace("https://cosmiccodequest.org/index.html"));
         }
         
