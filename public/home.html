@@ -32,7 +32,7 @@
         <h1>HOME PAGE</h1>
         <p>Explore the galaxy and earn badges!</p>
         <button onclick="location.href='difficulty.html'">Play Game</button>
-        <button onclick="location.href='user.html'">User Page</button>   
+        <button id="userButton" onclick="location.href='user.html'">User Page</button>   
         <button onclick="location.href='accessibility.html'">Accessibility</button>
         <button id="signOutButton">Logout</button>
     </div>
@@ -56,9 +56,11 @@
     <script>
         const auth = firebase.auth();
         const signOutButton = document.getElementById('signOutButton');
-        signOutButton.onclick = () => document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        signOutButton.onclick = () => auth.signOut();
-        signOutButton.onclick = () => window.location.replace("https://cosmiccodequest.org/index.html");
+        signOutButton.onclick = () => {
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            auth.signOut().then(() => window.location.replace("https://cosmiccodequest.org/index.html"));
+        }
+        
     </script>
     
 </body>
