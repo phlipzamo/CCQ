@@ -712,6 +712,7 @@ class SceneMain extends Phaser.Scene {
         .on('pointerdown', () => {var selectedLevel = Number(localStorage.getItem('level'));
             selectedLevel = selectedLevel+1;
             localStorage.setItem('level',selectedLevel.toString());
+            document.cookie = `level=${selectedLevel}`;
             location.href='game.html';})
         .on('pointerover', () => this.enterButtonHoverState(nextLevelButton) )
         .on('pointerout', () => this.enterButtonRestState(nextLevelButton) );
@@ -721,7 +722,9 @@ class SceneMain extends Phaser.Scene {
         this.uiSuccessGroup.add(veil);
         this.uiSuccessGroup.add(txt_Sucess);
         this.uiSuccessGroup.add(nextLevelButton);
-        this.uiSuccessGroup.setVisible(false); 
+        this.uiSuccessGroup.setVisible(false);
+
+        // TODO add badges and level progress to Firestore after level complete
     }
    
     enterButtonHoverState(btn) {
