@@ -15,6 +15,9 @@ if (isMobile == -1) {
                 debug: true
             }
         },
+        dom: {
+            createContainer: true
+        },
         scene: [SceneMain],
         
     };
@@ -30,6 +33,9 @@ if (isMobile == -1) {
             arcade: {
                 debug: false
             }
+        },
+        dom: {
+            createContainer: true
         },
         scene: [SceneMain],
         

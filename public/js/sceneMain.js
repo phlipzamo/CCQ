@@ -46,6 +46,7 @@ closeModalButtons.forEach(button =>{
         printNextTo(output.textContent);
     })
 })
+
 function openModel(modal){
     if(modal==null) return
     modal.classList.add('active')
@@ -99,6 +100,15 @@ var isMute = true
 function toggleMute(){
     isMute = !isMute
 }
+function change (iconID){
+    if(document.getElementById(iconID).className=="fa-solid fa-volume-xmark fa-xl"){
+        isMute= true;
+      document.getElementById(iconID).className = "fa-solid fa-volume-high fa-xl";
+    }else{
+        isMute =false;
+      document.getElementById(iconID).className = "fa-solid fa-volume-xmark fa-xl";
+    }
+  }
 
 const TOKEN = Object.freeze({
     WS: "WS", 
@@ -245,8 +255,18 @@ class SceneMain extends Phaser.Scene {
         this.load.audio("background", "assets/space.ogg");
         this.load.audio("wormhole","assets/Wormhole.wav");
         this.load.image("laser", "assets/Laser.png");
+        this.load.html("mute", "assets/mute.html");
+        this.load.html("volume", "assets/volume.html");
+        this.load.html("home", "assets/home.html");
+        this.load.html("levelSelect", "assets/levelSelect.html");
+        this.load.html("info", "assets/info.html");
     }
     create() {
+        this.mute = this.add.dom(0,0).createFromCache("mute");
+        this.volume = this.add.dom(0,0).createFromCache("volume");
+        this.home = this.add.dom(0,0).createFromCache("home");
+        this.levelSelect = this.add.dom(0,0).createFromCache("levelSelect");
+        this.info = this.add.dom(0,0).createFromCache("info");
         this.lasers = new Lasers(this);
         this.stackOfActions=[]
         this.isMovingRight = false;
@@ -403,8 +423,11 @@ class SceneMain extends Phaser.Scene {
         {   
             this.playWormholeMusic();
             this.playingMusic = true;
-            Align.sizeReduce(this.ufo);
-            if(this.ufo.displayWidth <10){
+            Align.moveTowardsCenter(this.earth);
+            Align.moveTowardsCenter(this.ufo);
+            Align.sizeIncrease(this.earth);
+            if(Align.isCenter(this.earth)){
+                this.goalIndex = -1;
                 this.uiSuccessGroup.setVisible(true); 
                 disableBtns();
             }
@@ -633,26 +656,39 @@ class SceneMain extends Phaser.Scene {
         this.cols= this.level.col;
         this.rows=this.level.row;
        
+       
+        this.goalIndex = this.level.earth;
+        this.astroidGroup = this.physics.add.group();
+        this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
+        this.createAstroids();
         this.earth=this.add.image(10,10,"wormhole");
         this.earth.setDepth=0;
-        this.goalIndex = this.level.earth;
-        
         this.ufo = this.physics.add.sprite(10,10,"ufo").setCollideWorldBounds(true, 1, 1, true);
         this.ufo.body.onWorldBounds = true;
         this.ufo.setDepth=1;
         this.playerIndex = this.level.ufo;
-        
         this.playerAngle = 0;
-        
-        this.astroidGroup = this.physics.add.group();
-        this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
         this.aGrid.show("0x05ed04");
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth,.8);
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
-        this.createAstroids();
+        
         this.createPauseScreen();
         this.createSuccessScreen();
+        var leveltext = "Level "+localStorage.getItem('level');
+        var txt_Level =this.add.text(0,0, leveltext ,{fontSize: 25, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 3 });
+        this.overlayGrid= new AlignGrid({scene: this, cols: 4, rows: 18});
+        this.iconBarGrid= new AlignGrid({scene: this, cols: 13, rows: 18});
+        this.overlayGrid.placeTextAtIndex(3, txt_Level);
+        this.iconBarGrid.placeAtIndex(0,this.home);
+        this.iconBarGrid.placeAtIndex(1,this.levelSelect)
+        this.iconBarGrid.placeAtIndex(2, this.mute);
+        this.iconBarGrid.placeAtIndex(2, this.volume);
+        this.iconBarGrid.placeAtIndex(3, this.info);
+        
+        
+
     }
+    
     createAstroids(){
         for(var i =0; i<this.level.astroids.length; i++){
             var astroid=this.physics.add.sprite(10,10,"astroid");
@@ -677,18 +713,18 @@ class SceneMain extends Phaser.Scene {
         veil.fillStyle('0x000000', 0.3);
         veil.fillRect(0,0, 500,600);
         veil.setDepth = 30;
-        var txt_failed =this.add.text(0,0, "MISSION FAILED",{fontSize: 50, color:"#FF0000", stroke: "#FFFFFF", strokeThickness: 6 });
+        var txt_failed =this.add.text(0,0, "M I S S I O N   F A I L E D",{fontFamily: "Arial Black", fontSize: 30, color:"#FFFFFF", stroke: "#FF0000", strokeThickness: 6 });
         this.uiGrid= new AlignGrid({scene: this, cols: 3, rows: 3});
         this.uiGrid.placeTextAtIndex(1, txt_failed);
         txt_failed.setDepth = 30;
-        var resetButton =this.add.text(0,0, "Reset?",{fontSize: 40, color:"#FF0000", stroke: "#FFFFFF", strokeThickness: 4 })
+        var resetButton =this.add.text(0,0, "Reset?",{fontSize: 40, color:"#FFFFFF", stroke: "#FF0000", strokeThickness: 4 })
         .setInteractive()
         .on('pointerdown', () => {this.setPlayer(this.level.ufo);
             //this.astroidGroup.clear(true, true);
             this.unhideAllAstroid();
         })
-        .on('pointerover', () => this.enterButtonHoverState(resetButton) )
-        .on('pointerout', () => this.enterButtonRestState(resetButton) );
+        .on('pointerover', () => this.enterButtonHoverState(resetButton, "#FF0000") )
+        .on('pointerout', () => this.enterButtonRestState(resetButton,"#FF0000") );
         this.uiGrid.placeTextAtIndex(4, resetButton);
         resetButton.setDepth = 30;
         this.uiFailedGroup = this.add.group();
@@ -704,18 +740,18 @@ class SceneMain extends Phaser.Scene {
         veil.fillStyle('0x000000', 0.3);
         veil.fillRect(0,0, 500,600);
         veil.setDepth = 30;
-        var txt_Sucess =this.add.text(0,0, "MISSION SUCCESS",{fontSize: 50, color:"#0f0", stroke: "#FFFFFF", strokeThickness: 6 });
+        var txt_Sucess =this.add.text(0,0, "M I S S I O N   S U C C E S S",{fontFamily: "Arial Black", fontSize: 30, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 8 });
         this.uiGrid.placeTextAtIndex(1, txt_Sucess);
         txt_Sucess.setDepth = 30;
-        var nextLevelButton =this.add.text(0,0, "Next Level?",{fontSize: 40, color:"#0f0", stroke: "#FFFFFF", strokeThickness: 4 })
+        var nextLevelButton =this.add.text(0,0, "Next Level?",{fontSize: 40, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 4 })
         .setInteractive()
         .on('pointerdown', () => {var selectedLevel = Number(localStorage.getItem('level'));
             selectedLevel = selectedLevel+1;
             localStorage.setItem('level',selectedLevel.toString());
             document.cookie = `level=${selectedLevel}`;
             location.href='game.html';})
-        .on('pointerover', () => this.enterButtonHoverState(nextLevelButton) )
-        .on('pointerout', () => this.enterButtonRestState(nextLevelButton) );
+        .on('pointerover', () => this.enterButtonHoverState(nextLevelButton,"#05ed04") )
+        .on('pointerout', () => this.enterButtonRestState(nextLevelButton,"#05ed04") );
         this.uiGrid.placeTextAtIndex(4, nextLevelButton);
         nextLevelButton.setDepth = 30;
         this.uiSuccessGroup = this.add.group();
@@ -727,12 +763,12 @@ class SceneMain extends Phaser.Scene {
         // TODO add badges and level progress to Firestore after level complete
     }
    
-    enterButtonHoverState(btn) {
-        btn.setStroke("#FFFFFF",10);
+    enterButtonHoverState(btn, color) {
+        btn.setStroke(color,10);
     }
 
-    enterButtonRestState(btn) {
-        btn.setStroke("#FFFFFF",4);
+    enterButtonRestState(btn,color) {
+        btn.setStroke(color,4);
     }
     setPlayer(gridPosistion){
         this.isMovingRight = false;

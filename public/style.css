@@ -422,3 +422,16 @@ button[data-tooltip]:hover::after {
 .arrow:hover {
     background-color: rgba(0, 0, 0, 0.6);
 }
+/* Target the font awesome icon */
+.fa {
+    /* Set initial color */
+    color: #05ed04;
+    /* Add transition effect */
+    transition: color 0.5s ease;
+  }
+  
+  /* Add hover effect */
+  .fa:hover {
+    /* Change color on hover */
+    color: white;
+  }
