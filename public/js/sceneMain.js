@@ -75,6 +75,7 @@ function disableBtns(){
     this.disableBtn("forward");
     this.disableBtn("right");
     this.disableBtn("left");
+    this.disableBtn("shoot");
     this.disableBtn("times");
     this.disableBtn("if");
 }
@@ -89,6 +90,7 @@ function enableBtns(){
     this.enableBtn("forward");
     this.enableBtn("right");
     this.enableBtn("left");
+    this.enableBtn("shoot");
     this.enableBtn("times");
     this.enableBtn("if");
 }
@@ -113,15 +115,17 @@ function setReset(){
     resetSelected = true;
 }
 var isMute = true
+var firstTimeSelected = true;
 function toggleMute(){
     isMute = !isMute
 }
 function change (iconID){
     if(document.getElementById(iconID).className=="fa-solid fa-volume-xmark fa-xl"){
-        isMute= true;
+
+        isMute= false;
       document.getElementById(iconID).className = "fa-solid fa-volume-high fa-xl";
     }else{
-        isMute =false;
+        isMute =true;
       document.getElementById(iconID).className = "fa-solid fa-volume-xmark fa-xl";
     }
   }
@@ -190,6 +194,7 @@ class Laser extends Phaser.Physics.Arcade.Sprite
         
     }
 
+
     preUpdate (time, delta)
     {
         super.preUpdate(time, delta);
@@ -218,7 +223,6 @@ class Laser extends Phaser.Physics.Arcade.Sprite
                 this.setVisible(false);
             }
         }
-        
     }
 }
 
@@ -272,17 +276,41 @@ class SceneMain extends Phaser.Scene {
         this.load.audio("wormhole","assets/Wormhole.wav");
         this.load.image("laser", "assets/Laser.png");
         this.load.html("mute", "assets/mute.html");
-        this.load.html("volume", "assets/volume.html");
         this.load.html("home", "assets/home.html");
         this.load.html("levelSelect", "assets/levelSelect.html");
         this.load.html("info", "assets/info.html");
     }
     create() {
         this.mute = this.add.dom(0,0).createFromCache("mute");
-        this.volume = this.add.dom(0,0).createFromCache("volume");
         this.home = this.add.dom(0,0).createFromCache("home");
         this.levelSelect = this.add.dom(0,0).createFromCache("levelSelect");
         this.info = this.add.dom(0,0).createFromCache("info");
+        this.audio = this.sound.add("background");
+        this.backgroundMusicPlaying =false;
+        var musicConfig ={
+            mute: false,
+            volume:1,
+            rate: 1,
+            detune:0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        }
+        this.audio.play(musicConfig);
+        this.audio.pause();
+
+        this.wormholeAudio = this.sound.add("wormhole");
+        var musicConfig ={
+            mute: false,
+            volume:1,
+            rate: 1,
+            detune:0,
+            seek: 0,
+            loop: false,
+            delay: 0
+        }
+        this.wormholeAudio.play(musicConfig);
+        this.wormholeAudio.pause();
         this.lasers = new Lasers(this);
         this.stackOfActions=[]
         this.isMovingRight = false;
@@ -294,6 +322,8 @@ class SceneMain extends Phaser.Scene {
         this.running = false;
         this.complete = true;
         this.playingMusic= false;
+        this.endstate = false;
+        this.firstTime = true;
         this.createLevel();
         this.animationCreate();
     
@@ -308,16 +338,24 @@ class SceneMain extends Phaser.Scene {
         });
         this.physics.add.overlap(this.lasers, this.astroidGroup, (laser, astroid) =>
         {
-            astroid.play("Explode");
             astroid.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
-                if(this.complete = true){return;}
+                if(this.complete === true){return;}
                 this.hideAstroid(astroid);
                 //astroid.destroy();
                 this.complete = true;
                 this.HitAstroid=false;
+                this.firstTime = true;
+                //this.lasers = new Lasers(this);
             }, this);
+            astroid.play("Explode");
+            
             this.HitAstroid=true;
-            laser.destroy();
+            if(this.firstTime){
+                laser.destroy();
+                this.firstTime = false;
+            }
+
+            //laser.iHitSomething(true);
             
             //this.stopPlayer()
             //this.setPlayer(this.level.ufo);
@@ -442,11 +480,17 @@ class SceneMain extends Phaser.Scene {
             Align.moveTowardsCenter(this.earth);
             Align.moveTowardsCenter(this.ufo);
             Align.sizeIncrease(this.earth);
+            this.stopPlayer();
+            this.endstate = true;
             if(Align.isCenter(this.earth)){
                 this.goalIndex = -1;
                 this.uiSuccessGroup.setVisible(true); 
                 disableBtns();
             }
+            
+        }
+        if(this.endstate){
+            this.ufo.rotation += 0.025;
         }
         
         if(runSelected){
@@ -470,7 +514,18 @@ class SceneMain extends Phaser.Scene {
             this.stopMusic();
             this.setPlayer(this.level.ufo);
         }
-        this.game.sound.mute = isMute;
+
+        if(!isMute){
+           
+            this.playMusic();
+            this.backgroundMusicPlaying = true
+        }
+        else{
+            this.audio.pause();
+            this.backgroundMusicPlaying =false;
+        }
+       
+        //this.game.sound.mute = isMute;
     }
     parseData(){
         this.indent = 0;
@@ -698,7 +753,6 @@ class SceneMain extends Phaser.Scene {
         this.iconBarGrid.placeAtIndex(0,this.home);
         this.iconBarGrid.placeAtIndex(1,this.levelSelect)
         this.iconBarGrid.placeAtIndex(2, this.mute);
-        this.iconBarGrid.placeAtIndex(2, this.volume);
         this.iconBarGrid.placeAtIndex(3, this.info);
         
         
@@ -715,7 +769,7 @@ class SceneMain extends Phaser.Scene {
     }
     hideAstroid(astroid){
         astroid.setVisible(false);
-        astroid.body.reset(-64,-64);
+        astroid.body.reset(500,-64);
     }
     unhideAllAstroid(){
         for(var i =0; i<this.level.astroids.length; i++){
@@ -811,18 +865,18 @@ class SceneMain extends Phaser.Scene {
         this.uiFailedGroup.setVisible(false);
         enableBtns();
     }
+
     stopPlayer(){
         this.isMovingRight = false;
         this.isMovingLeft = false;
-        this.isShooting= false;
-        this.HitAstroid=false;
         this.isMovingBack = false;
         this.isMovingForward = false;
+        this.isShooting = false;
+        this.HitAstroid =false;
         this.running = false;
         this.complete = true;
         this.playingMusic= false;
         this.ufo.body.reset(this.ufo.x,this.ufo.y);
-        //this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.play("idle");
     }
     
@@ -897,33 +951,14 @@ class SceneMain extends Phaser.Scene {
         this.ufo.play("Backward");
     }
     playMusic(){
-        this.audio = this.sound.add("background");
-        var musicConfig ={
-            mute: false,
-            volume:1,
-            rate: 1,
-            detune:0,
-            seek: 0,
-            loop: true,
-            delay: 0
+        if(!this.backgroundMusicPlaying){
+            this.audio.resume();
         }
-        this.audio.play(musicConfig);
+       
     }
     playWormholeMusic(){
-        if(!this.playingMusic){
-            this.wormholeAudio = this.sound.add("wormhole");
-            var musicConfig ={
-                mute: false,
-                volume:1,
-                rate: 1,
-                detune:0,
-                seek: 0,
-                loop: false,
-                delay: 0
-            }
-            this.wormholeAudio.play(musicConfig);
-        }
-        
+        this.wormholeAudio.resume();
+
     }
     stopMusic(){
         this.audio.stop();
