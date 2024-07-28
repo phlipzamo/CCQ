@@ -5,6 +5,8 @@ const output = document.querySelector('.output')
 const keys = document.querySelector('.number-grid')
 const auth = firebase.auth();
 const db = firebase.firestore();
+let childAccountsCollection = db.collection('child_accounts');
+let adultAccountsCollection = db.collection('adult_accounts');
 
 function getCookie(name) {
     const cookieDecoded = decodeURIComponent(document.cookie);

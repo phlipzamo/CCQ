@@ -53,6 +53,7 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 // adult user is logged in
+
                 child_accounts = db.collection('child_accounts');
 
                 createChildAccount.onclick = () => {
@@ -61,10 +62,10 @@
                     if (enteredUsername == "" || document.getElementById('password').value == "") {
                         informationTextBox.innerHTML = `<h3>Please make sure both the username and password fields are filled.</h3>`;
                     } else {
-                        var query = child_accounts.where('username', 'array-contains-any', `${enteredUsername}`)
+                        var query = child_accounts.where('username', '==', `${enteredUsername}`);
                         query.get().then(function(querySnapshot) {
                             if ((querySnapshot.empty && document.getElementById('username').value != '') && document.getElementById('password').value != '') {
-                                child_accounts.add({
+                                child_accounts.doc(`${enteredUsername}`).set({
                                 parent_uid: user.uid,
                                 username: document.getElementById('username').value,
                                 password: document.getElementById('password').value
