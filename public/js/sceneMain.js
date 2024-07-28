@@ -3,6 +3,8 @@ const openModalButtons = document.querySelectorAll('[data-modal-open]')
 const closeModalButtons = document.querySelectorAll('[data-modal-close]')
 const output = document.querySelector('.output')
 const keys = document.querySelector('.number-grid')
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 function getCookie(name) {
     const cookieDecoded = decodeURIComponent(document.cookie);
@@ -776,7 +778,7 @@ class SceneMain extends Phaser.Scene {
 
         // TODO add badges and level progress to Firestore after level complete
         if (getCookie("isChildAccount") == "true") {
-            
+
         } else {
 
         }
