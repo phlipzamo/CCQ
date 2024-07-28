@@ -328,13 +328,23 @@ class SceneMain extends Phaser.Scene {
         this.animationCreate();
     
         this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroid) =>
-        {
-            astroid.play("Explode");
-            this.stopPlayer()
-            //this.setPlayer(this.level.ufo);
-            this.audio.stop(); 
-            this.uiFailedGroup.setVisible(true);
-            disableBtns();
+        {   
+            if(this.firstTime){
+                astroid.play("Explode");
+                this.firstTime = false;
+                this.stopPlayer();
+                //this.setPlayer(this.level.ufo);
+                //this.audio.stop(); 
+                this.uiFailedGroup.setVisible(true);
+                disableBtns();
+            }
+            astroid.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+                if(!this.firstTime){
+                    this.hideAstroid(astroid);
+                }
+                this.firstTime = true;
+            }, this);
+            
         });
         this.physics.add.overlap(this.lasers, this.astroidGroup, (laser, astroid) =>
         {
@@ -435,12 +445,12 @@ class SceneMain extends Phaser.Scene {
                 } 
                 else{
                     this.running = false;
-                    this.stopMusic();
+                    //this.stopMusic();
                     if (this.goalIndex != this.playerIndex)
                     {
                         this.stopPlayer()
                         //this.setPlayer(this.level.ufo);
-                        this.audio.stop(); 
+                        //this.audio.stop(); 
                         this.uiFailedGroup.setVisible(true);
                         disableBtns();
                     }
@@ -494,8 +504,9 @@ class SceneMain extends Phaser.Scene {
         }
         
         if(runSelected){
-            
+            disableBtns()
            if(this.stackOfActions.length===0){
+
                 this.playMusic()
                 resetSelection();
                 this.scriptData=getScript();
@@ -525,7 +536,7 @@ class SceneMain extends Phaser.Scene {
             this.backgroundMusicPlaying =false;
         }
        
-        //this.game.sound.mute = isMute;
+        this.game.sound.mute = isMute;
     }
     parseData(){
         this.indent = 0;
@@ -856,7 +867,7 @@ class SceneMain extends Phaser.Scene {
         this.playerAngle = 0;
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
         
-		this.ufo.body.reset(this.ufo.x,this.ufo.y);
+		//this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.angle = this.playerAngle;
         this.ufo.play("idle");
         this.astroidGroup.getChildren().forEach(function(astroid){
@@ -876,8 +887,13 @@ class SceneMain extends Phaser.Scene {
         this.running = false;
         this.complete = true;
         this.playingMusic= false;
-        this.ufo.body.reset(this.ufo.x,this.ufo.y);
         this.ufo.play("idle");
+        //var pos =this.aGrid.indexPosition(this.playerIndex)
+        this.ufo.setVelocityX(0);
+        this.ufo.setVelocityY(0);
+        //this.ufo.body.reset();
+        //this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9)
+        
     }
     
     
