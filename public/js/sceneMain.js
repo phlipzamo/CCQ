@@ -4,6 +4,20 @@ const closeModalButtons = document.querySelectorAll('[data-modal-close]')
 const output = document.querySelector('.output')
 const keys = document.querySelector('.number-grid')
 
+function getCookie(name) {
+    const cookieDecoded = decodeURIComponent(document.cookie);
+    const cookieArray = cookieDecoded.split("; ");
+    let result = null;
+
+    cookieArray.forEach(element => {
+        if (element.indexOf(name) == 0) {
+            result = element.substring(name.length + 1);
+        }
+    })
+
+    return result;
+}
+
 keys.addEventListener('click', e => {
     if (e.target.matches('button')) {
         const key = e.target
@@ -761,6 +775,11 @@ class SceneMain extends Phaser.Scene {
         this.uiSuccessGroup.setVisible(false);
 
         // TODO add badges and level progress to Firestore after level complete
+        if (getCookie("isChildAccount") == "true") {
+            
+        } else {
+
+        }
     }
    
     enterButtonHoverState(btn, color) {
