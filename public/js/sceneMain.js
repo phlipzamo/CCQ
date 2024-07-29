@@ -848,7 +848,11 @@ class SceneMain extends Phaser.Scene {
                 [levelCookie]: true
             }, { merge: true });
         } else if (getCookie("isChildAccount") == "false") {
-
+            var userUID = auth.currentUser.uid;
+            var levelCookie = "level".concat(getCookie('level'));
+            adultAccountsCollection.doc(`${userUID}`).set({
+                [levelCookie]: true
+            }, { merge: true });
         } else {
             console.log("Error. User should have isChildAccount cookie with value of true or false, bu does not.");
         }
