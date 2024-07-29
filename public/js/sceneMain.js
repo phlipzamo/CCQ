@@ -506,20 +506,16 @@ class SceneMain extends Phaser.Scene {
         }
         
         if(runSelected){
+            this.stackOfActions.length=0;
             disableBtns()
-           if(this.stackOfActions.length===0){
-
-                this.playMusic()
-                resetSelection();
-                this.scriptData=getScript();
-                this.lexer.reset( this.scriptData);
-               
-                this.parseData();
-                runSelected = false;
-            }
-            else{
-                //TODO Handle run selected while running
-            }
+    
+            resetSelection();
+            this.scriptData=getScript();
+            this.lexer.reset( this.scriptData);
+            
+            this.parseData();
+            runSelected = false;
+            
         }
 
         if (resetSelected)
