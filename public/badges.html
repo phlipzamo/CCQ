@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badges</title>
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCY-sgMJqTJWkrV5GEfSlj51fmr0eKUZ4s",
+          authDomain: "cosmiccodequest.firebaseapp.com",
+          projectId: "cosmiccodequest",
+          storageBucket: "cosmiccodequest.appspot.com",
+          messagingSenderId: "1078215067126",
+          appId: "1:1078215067126:web:b62a0538ace8c99b1633d7",
+          measurementId: "G-YTB44CQTQ2"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </head>
 <body>
     <div class="container">
@@ -41,6 +58,26 @@
             if (storedHighContrast) {
                 document.documentElement.classList.add('high-contrast');
             }
+        }
+    </script>
+    <script src="app.js"></script>
+    <script>
+        // TODO add badge to database and update UI if level1, level5, level10 are completed
+        if (getCookie("isChildAccount") == "true") {
+            var usernameQuery = getCookie('username');
+            // if (Firestore query to see if level 1 has been completed) {
+            // give badge to user
+            // }
+            // childAccountsCollection.doc(`${usernameQuery}`).set({
+            //     [levelCookie]: true
+            // }, { merge: true });
+        } else if (getCookie("isChildAccount") == "false") {
+            var userUID = auth.currentUser.uid;
+            // adultAccountsCollection.doc(`${userUID}`).set({
+            //     [levelCookie]: true
+            // }, { merge: true });
+        } else {
+            console.log("Error. User should have isChildAccount cookie with value of true or false, but does not.");
         }
     </script>
 </body>
