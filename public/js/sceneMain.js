@@ -1,6 +1,8 @@
 
 const openModalButtons = document.querySelectorAll('[data-modal-open]')
 const closeModalButtons = document.querySelectorAll('[data-modal-close]')
+const openModalIFButtons = document.querySelectorAll('[data-modalIF-open]')
+const closeModalIFButtons = document.querySelectorAll('[data-modalIF-close]')
 const output = document.querySelector('.output')
 const keys = document.querySelector('.number-grid')
 const auth = firebase.auth();
@@ -64,7 +66,18 @@ closeModalButtons.forEach(button =>{
         printNextTo(output.textContent);
     })
 })
-
+openModalIFButtons.forEach(button =>{
+    button.addEventListener('click',()=>{
+        const modal = document.querySelector(button.dataset.modalIFOpen)
+        openModel(modal)
+    })
+})
+closeModalIFButtons.forEach(button =>{
+    button.addEventListener('click',()=>{
+        const modal = document.querySelector(button.dataset.modalIFClose)
+        closeModel(modal)
+    })
+})
 function openModel(modal){
     if(modal==null) return
     modal.classList.add('active')
@@ -287,6 +300,7 @@ class SceneMain extends Phaser.Scene {
         this.home = this.add.dom(0,0).createFromCache("home");
         this.levelSelect = this.add.dom(0,0).createFromCache("levelSelect");
         this.info = this.add.dom(0,0).createFromCache("info");
+        
         this.audio = this.sound.add("background");
         this.backgroundMusicPlaying =false;
         var musicConfig ={
@@ -758,13 +772,24 @@ class SceneMain extends Phaser.Scene {
         var txt_Level =this.add.text(0,0, leveltext ,{fontSize: 25, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 3 });
         this.overlayGrid= new AlignGrid({scene: this, cols: 4, rows: 18});
         this.iconBarGrid= new AlignGrid({scene: this, cols: 13, rows: 18});
+        this.laserBarGrid= new AlignGrid({scene: this, cols: 25, rows: 27});
         this.overlayGrid.placeTextAtIndex(3, txt_Level);
         this.iconBarGrid.placeAtIndex(0,this.home);
         this.iconBarGrid.placeAtIndex(1,this.levelSelect)
         this.iconBarGrid.placeAtIndex(2, this.mute);
         this.iconBarGrid.placeAtIndex(3, this.info);
-        
-        
+        var text_Laser =this.add.text(0,0, "Lasers" ,{fontSize: 20, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 3 });
+        this.laserBarGrid.placeAtIndex(625, text_Laser);
+        this.laserBar = this.add.graphics();
+        this.laserBar.fillStyle(0x05ed04, 1.0);
+        this.laserBar.fillRect(0, 0, 5, 15);
+        this.laserBar.x = text_Laser.x + 80
+        this.laserBar.y = text_Laser.y+5
+        this.laserBar2 = this.add.graphics();
+        this.laserBar2.fillStyle(0x05ed04, 1.0);
+        this.laserBar2.fillRect(0, 0, 5, 15);
+        this.laserBar2.x = this.laserBar.x + 7
+        this.laserBar2.y = this.laserBar.y
 
     }
     
