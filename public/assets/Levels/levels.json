@@ -4,6 +4,7 @@
         "col": 3,
         "ufo": 7,
         "earth":1,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},
@@ -24,6 +25,7 @@
         "col": 3,
         "ufo": 8,
         "earth":1,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},
@@ -43,6 +45,7 @@
         "col": 3,
         "ufo": 6,
         "earth":2,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},
@@ -61,6 +64,7 @@
         "col": 3,
         "ufo": 7,
         "earth":2,
+        "lasers":0,
         
         "astroids": [
             {"place": 4},
@@ -78,6 +82,7 @@
         "col": 4,
         "ufo": 12,
         "earth":3,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},
@@ -96,6 +101,7 @@
         "col": 4,
         "ufo": 12,
         "earth":14,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},
@@ -115,6 +121,7 @@
         "col": 4,
         "ufo": 12,
         "earth":2,
+        "lasers":2,
         
         "astroids": [
             {"place": 0},
@@ -137,6 +144,7 @@
         "col": 5,
         "ufo": 20,
         "earth":0,
+        "lasers":0,
         
         "astroids": [
             {"place": 5},
@@ -161,6 +169,7 @@
         "col": 6,
         "ufo": 24,
         "earth":0,
+        "lasers":0,
         
         "astroids": [
             {"place": 4},
@@ -192,6 +201,7 @@
         "col": 6,
         "ufo": 24,
         "earth":4,
+        "lasers":0,
         
         "astroids": [
             {"place": 0},

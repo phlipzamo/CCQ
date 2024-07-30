@@ -177,7 +177,7 @@ class Laser extends Phaser.Physics.Arcade.Sprite
 {
     constructor (scene, x, y)
     {
-        super(scene, x, y, 'laser');
+        super(scene, -40, -40, 'laser');
         
     }
 
@@ -856,25 +856,51 @@ class SceneMain extends Phaser.Scene {
         var txt_Level =this.add.text(0,0, leveltext ,{fontSize: 25, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 3 });
         this.overlayGrid= new AlignGrid({scene: this, cols: 4, rows: 18});
         this.iconBarGrid= new AlignGrid({scene: this, cols: 13, rows: 18});
-        this.laserBarGrid= new AlignGrid({scene: this, cols: 25, rows: 27});
+        this.laserBarGrid= new AlignGrid({scene: this, cols: 13, rows: 27});
         this.overlayGrid.placeTextAtIndex(3, txt_Level);
         this.iconBarGrid.placeAtIndex(0,this.home);
         this.iconBarGrid.placeAtIndex(1,this.levelSelect)
         this.iconBarGrid.placeAtIndex(2, this.mute);
         this.iconBarGrid.placeAtIndex(3, this.info);
         var text_Laser =this.add.text(0,0, "Lasers" ,{fontSize: 20, color:"#FFFFFF", stroke: "#05ed04", strokeThickness: 3 });
-        this.laserBarGrid.placeAtIndex(625, text_Laser);
-        this.laserBar = this.add.graphics();
-        this.laserBar.fillStyle(0x05ed04, 1.0);
-        this.laserBar.fillRect(0, 0, 5, 15);
-        this.laserBar.x = text_Laser.x + 80
-        this.laserBar.y = text_Laser.y+5
-        this.laserBar2 = this.add.graphics();
-        this.laserBar2.fillStyle(0x05ed04, 1.0);
-        this.laserBar2.fillRect(0, 0, 5, 15);
-        this.laserBar2.x = this.laserBar.x + 7
-        this.laserBar2.y = this.laserBar.y
+        this.laserBarGrid.placeAtIndex(25*13, text_Laser);
+        
+        this.laserUIGroup = this.add.group();
 
+        this.laserEmpty = this.add.graphics();
+        this.laserEmpty.lineStyle(3,0xFF0000);
+        this.laserEmpty.moveTo(0,0);
+        this.laserEmpty.lineTo(40,15);
+        this.laserEmpty.strokePath();
+        this.laserEmpty.moveTo(40,0);
+        this.laserEmpty.lineTo(0,15);
+        this.laserEmpty.strokePath();
+        this.laserEmpty.x = text_Laser.x + 80
+        this.laserEmpty.y = text_Laser.y+5
+        
+        if(this.level.lasers !=0){
+            this.laserAmount=0
+            this.laserEmpty.setVisible(false);
+            var laserBar
+            laserBar = this.add.graphics();
+            laserBar.fillStyle(0x05ed04, 1.0);
+            laserBar.fillRect(0, 0, 5, 15);
+            laserBar.x = text_Laser.x + 80
+            laserBar.y = text_Laser.y+5
+            this.laserUIGroup.add(laserBar);
+            this.laserAmount++;
+            var nextLaserBar
+            for(var i = 1; i<this.level.lasers; i++){
+                nextLaserBar = this.add.graphics();
+                nextLaserBar.fillStyle(0x05ed04, 1.0);
+                nextLaserBar.fillRect(0, 0, 5, 15);
+                nextLaserBar.x = laserBar.x + 7
+                nextLaserBar.y = laserBar.y
+                this.laserUIGroup.add(nextLaserBar);
+                laserBar = nextLaserBar;
+                this.laserAmount++;
+            }
+        }
     }
     
     createAstroids(){
@@ -918,6 +944,17 @@ class SceneMain extends Phaser.Scene {
             this.astroidGroup.getChildren()[i].setVisible(true);
         }
     }
+    unHideLaserUI(){
+        var isEmpty = true;
+        this.laserUIGroup.getChildren().forEach(function(laserUI){
+            laserUI.setVisible(true);
+            isEmpty = false;
+        })
+        this.laserAmount = this.laserUIGroup.getChildren().length;
+        if(!isEmpty){
+            this.laserEmpty.setVisible(false);
+        }
+    }
     createPauseScreen(){
         this.uiFailedGroup = this.add.group();
         var veil = this.add.graphics({x:0,y:0});
@@ -933,6 +970,7 @@ class SceneMain extends Phaser.Scene {
         .on('pointerdown', () => {this.setPlayer(this.level.ufo);
             //this.astroidGroup.clear(true, true);
             this.unhideAllAstroid();
+            this.unHideLaserUI();
         })
         .on('pointerover', () => this.enterButtonHoverState(resetButton, "#FF0000") )
         .on('pointerout', () => this.enterButtonRestState(resetButton,"#FF0000") );
@@ -1098,9 +1136,15 @@ class SceneMain extends Phaser.Scene {
         this.ufo.play("Left");
     }
     requestPlayerShoot(){
-        this.isShooting= true;
-        this.complete = false;
-        this.lasers.fireLaser(this.ufo.x, this.ufo.y - 20, this.playerAngle);
+        if(this.laserAmount!=0){
+            this.isShooting= true;
+            this.complete = false;
+            this.laserUIGroup.getChildren()[--this.laserAmount].setVisible(false);
+            this.lasers.fireLaser(this.ufo.x, this.ufo.y - 20, this.playerAngle);
+            if(this.laserAmount===0){
+                this.laserEmpty.setVisible(true);
+            }
+        } 
     }
     requestPlayerMoveBack(){
         this.isMovingBack= true;
