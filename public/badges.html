@@ -62,20 +62,99 @@
     </script>
     <script src="app.js"></script>
     <script>
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let childAccountsCollection = db.collection('child_accounts');
+        let adultAccountsCollection = db.collection('adult_accounts');
+
         // TODO add badge to database and update UI if level1, level5, level10 are completed
         if (getCookie("isChildAccount") == "true") {
             var usernameQuery = getCookie('username');
-            // if (Firestore query to see if level 1 has been completed) {
-            // give badge to user
-            // }
-            // childAccountsCollection.doc(`${usernameQuery}`).set({
-            //     [levelCookie]: true
-            // }, { merge: true });
-        } else if (getCookie("isChildAccount") == "false") {
-            var userUID = auth.currentUser.uid;
-            // adultAccountsCollection.doc(`${userUID}`).set({
-            //     [levelCookie]: true
-            // }, { merge: true });
+
+            childAccountsCollection.doc(`${usernameQuery}`).get().then((doc) => {
+                if (doc.exists) {
+                    if (doc.get('badgeLevel1') != true) {
+                        if (doc.get('level1') == true) {
+                            childAccountsCollection.doc(`${usernameQuery}`).set({
+                                'badgeLevel1': true
+                            }, { merge: true });
+                        }
+                    }
+                    if (doc.get('badgeLevel1') == true) {
+                        document.getElementById('badge1Status').innerHTML = 'Achieved';
+                    }
+
+
+                    if (doc.get('badgeLevel5') != true) {
+                        if (doc.get('level5') == true) {
+                            childAccountsCollection.doc(`${usernameQuery}`).set({
+                                'badgeLevel5': true
+                            }, { merge: true });
+                        }
+                    }
+                    if (doc.get('badgeLevel5') == true) {
+                        document.getElementById('badge5Status').innerHTML = 'Achieved';
+                    }
+
+
+                    if (doc.get('badgeLevel10') != true) {
+                        if (doc.get('level10') == true) {
+                            childAccountsCollection.doc(`${usernameQuery}`).set({
+                                'badgeLevel10': true
+                            }, { merge: true });
+                        }
+                    }
+                    if (doc.get('badgeLevel10') == true) {
+                        document.getElementById('badge10Status').innerHTML = 'Achieved';
+                    }
+                } 
+            })
+        } 
+        else if (getCookie("isChildAccount") == "false") {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    var userUID = auth.currentUser.uid;
+
+                    adultAccountsCollection.doc(`${userUID}`).get().then((doc) => {
+                        if (doc.exists) {
+                            if (doc.get('badgeLevel1') != true) {
+                                if (doc.get('level1') == true) {
+                                    adultAccountsCollection.doc(`${userUID}`).set({
+                                        'badgeLevel1': true
+                                    }, { merge: true });
+                                }
+                            }
+                            if (doc.get('badgeLevel1') == true) {
+                                document.getElementById('badge1Status').innerHTML = 'Achieved';
+                            }
+
+
+                            if (doc.get('badgeLevel5') != true) {
+                                if (doc.get('level5') == true) {
+                                    adultAccountsCollection.doc(`${userUID}`).set({
+                                        'badgeLevel5': true
+                                    }, { merge: true });
+                                }
+                            }
+                            if (doc.get('badgeLevel5') == true) {
+                                document.getElementById('badge5Status').innerHTML = 'Achieved';
+                            }
+
+
+                            if (doc.get('badgeLevel10') != true) {
+                                if (doc.get('level10') == true) {
+                                    adultAccountsCollection.doc(`${userUID}`).set({
+                                        'badgeLevel10': true
+                                    }, { merge: true });
+                                }
+                            }
+                            if (doc.get('badgeLevel10') == true) {
+                                document.getElementById('badge10Status').innerHTML = 'Achieved';
+                            }
+                        } 
+                    })
+                }
+            })
         } else {
             console.log("Error. User should have isChildAccount cookie with value of true or false, but does not.");
         }
