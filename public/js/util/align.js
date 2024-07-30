@@ -49,11 +49,14 @@ class Align
 	}
 	static isCenter(obj)
 	{
-		if(obj.x==game.config.width/2 && obj.y==game.config.height/2){
+		if(this.isWithinTwo(obj.x,game.config.width/2) && this.isWithinTwo(obj.y,game.config.height/2)){
 			return true
 		}
 		return false;
 	}
+	static isWithinTwo(num1, num2) {
+		return Math.abs(num1 - num2) <= 2;
+	  }
 	static sizeReduce(obj)
 	{
 		obj.displayWidth=obj.displayWidth*.98;

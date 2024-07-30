@@ -132,4 +132,14 @@ class AlignGrid
 		            }
 		        }
 	}
+	isAtIndex(index, obj){
+		var pos = this.indexPosition(index);
+		if(obj.x!=pos[0]){
+			return false
+		}
+		if(obj.y!=pos[1]){
+			return false
+		}
+		return true;
+	}
 }

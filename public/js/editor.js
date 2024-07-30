@@ -76,7 +76,7 @@ function print(text){
         }
     }
 
-    if (text.includes("times")){
+    if (text.includes("times") || text.includes("if")){
       session.insert({
         row: currentLine,
         column: codeEditor.session.getLine(currentLine).length
@@ -134,7 +134,7 @@ function deleteLine(){
     for(var i = currentLine-1; i>=0; i--){
       lineContent = codeEditor.session.getLine(i);
      
-      if(lineContent.includes("times")){
+      if(lineContent.includes("times")||lineContent.includes("if")){
         if(tabs == countWhitespace(lineContent)/4){
           codeEditor.session.doc.removeFullLines(i, i); 
           return;
@@ -147,7 +147,7 @@ function deleteLine(){
       );
     }
   }
-  else if(lineContent.includes("times")){
+  else if(lineContent.includes("times")||lineContent.includes("if")){
     for(var i = currentLine; i<codeEditor.session.getLength(); i++){
       lineContent = codeEditor.session.getLine(i);
       if(lineContent.includes("end")){

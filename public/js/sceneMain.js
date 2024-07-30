@@ -1,7 +1,6 @@
 
 const openModalButtons = document.querySelectorAll('[data-modal-open]')
 const closeModalButtons = document.querySelectorAll('[data-modal-close]')
-const openModalIFButtons = document.querySelectorAll('[data-modalIF-open]')
 const closeModalIFButtons = document.querySelectorAll('[data-modalIF-close]')
 const output = document.querySelector('.output')
 const keys = document.querySelector('.number-grid')
@@ -66,15 +65,10 @@ closeModalButtons.forEach(button =>{
         printNextTo(output.textContent);
     })
 })
-openModalIFButtons.forEach(button =>{
-    button.addEventListener('click',()=>{
-        const modal = document.querySelector(button.dataset.modalIFOpen)
-        openModel(modal)
-    })
-})
+
 closeModalIFButtons.forEach(button =>{
     button.addEventListener('click',()=>{
-        const modal = document.querySelector(button.dataset.modalIFClose)
+        const modal = button.closest('.modal')
         closeModel(modal)
     })
 })
@@ -153,7 +147,9 @@ const TOKEN = Object.freeze({
     STRING:"STRING",
     TIMES: "TIMES",
     END: "END",
+    IF: "IF",
     KEYWORD:"KEYWORD",
+    PAR: "PAR",
     FUNCTION:"FUNCTION",
     ERROR:"ERROR",
     TO:"TO",
@@ -171,10 +167,12 @@ const ufoMoves = Object.freeze({
     ROTATE_RIGHT:"rotate_right",
     ROTATE_LEFT:"rotate_left",
     SHOOT:"shoot",
-    SCAN:"scan",
-    TRACTORBEAM:"tractorbeam",
+    ASTROID:"AstroidInFront",
+    EMPTY:"EmptyInFront",
+    TARGET:"TargetInFront",
+    OUTOFBOUNDS:"OutOfBoundsInFront",
 });
-const ufoMovesArr= ['forward','rotate_right','rotate_left','backward','shoot','scan()','tractorbeam()'] 
+const ufoMovesArr= ['forward','rotate_right','rotate_left','backward','shoot','AstroidInFront','EmptyInFront', 'TargetInFront', 'OutOfBoundsInFront'] 
 class Laser extends Phaser.Physics.Arcade.Sprite
 {
     constructor (scene, x, y)
@@ -284,6 +282,9 @@ class SceneMain extends Phaser.Scene {
     {
     	this.load.atlas("astroid", "assets/astroid.png", "assets/astroid.json");
         this.load.image("wormhole", "assets/Wormhole.png");
+        this.load.image("greenWormhole", "assets/GreenWormhole.png");
+
+        this.load.image("redWormhole", "assets/RedWormhole.png");
         this.load.atlas("ufo", "assets/cowufo.png", "assets/cowufo.json");
         this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
@@ -340,11 +341,13 @@ class SceneMain extends Phaser.Scene {
         this.playingMusic= false;
         this.endstate = false;
         this.firstTime = true;
+        this.isIF = false;
         this.createLevel();
         this.animationCreate();
     
         this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroid) =>
         {   
+            if(this.endstate){return}
             if(this.firstTime){
                 astroid.play("Explode");
                 this.firstTime = false;
@@ -413,10 +416,10 @@ class SceneMain extends Phaser.Scene {
             FUNCTION: ufoMovesArr,
             TIMES: 'times',
             PER: '.',
+            IF: "if",
             END: 'end',
             KEYWORD: ['for', 'to'],
-            L_PAR: "(",
-            R_PAR: ")",
+            PAR: ["(",")"],
             COLON: ":",
             ERROR: /[A-Za-z_][A-Za-z0-9_]*/,
             INDENT1: "temp",
@@ -433,30 +436,58 @@ class SceneMain extends Phaser.Scene {
         this.astroidGroup.getChildren().forEach(function(item, index){
             item.rotation+=.005;
         })
-        
+        this.wormholeGroup.getChildren().forEach(function(item, index){
+            item.rotation+=.050;
+        })
         if(this.running){
             //if complete get next action
             if(this.complete){
                 if(this.stackOfActions.length >0){
                     var action = this.stackOfActions.shift();
                     setSelection(action.line);
-                    if(action.action == "F"){
-                        this.requestPlayerMoveForward();
+                    if(!action.boolIf){
+                        this.isIF = false;
                     }
-                    else if (action.action == "B"){
-                       this.requestPlayerMoveBack();
-                    }
-                    else if (action.action == "R"){
-                       this.requestPlayerMoveRight()
-                    }
-                    else if (action.action == "L"){
-                        this.requestPlayerMoveLeft();
-                    }
-                    else if (action.action == "S"){
-                        this.requestPlayerShoot();
-                    }
-                    else{
-                        console.log("not real action")
+                    if(this.isIF === action.boolIf){
+                        if(action.action == "F"){
+                            this.requestPlayerMoveForward();
+                        }
+                        else if (action.action == "B"){
+                            this.requestPlayerMoveBack();
+                        }
+                        else if (action.action == "R"){
+                           this.requestPlayerMoveRight()
+                        }
+                        else if (action.action == "L"){
+                            this.requestPlayerMoveLeft();
+                        }
+                        else if (action.action == "S"){
+                            this.requestPlayerShoot();
+                        }
+                        else if (action.action == "E"){
+                            //this.isIF = false;
+                            if(this.checkInFront()===action.action){
+                                this.isIF = true;
+                            }
+                        }
+                        else if (action.action == "A"){
+                            if(this.checkInFront()===action.action){
+                                this.isIF = true;
+                            }
+                        }
+                        else if (action.action == "T"){
+                            if(this.checkInFront()===action.action){
+                                this.isIF = true;
+                            }
+                        }
+                        else if (action.action == "OB"){
+                            if(this.checkInFront()===action.action){
+                                this.isIF = true;
+                            }
+                        }
+                        else{
+                            console.log("not real action")
+                        }
                     }
                 } 
                 else{
@@ -515,6 +546,18 @@ class SceneMain extends Phaser.Scene {
             }
             
         }
+        for(var i =0; i<this.level.wormholes.length; i++){
+            if(this.level.wormholes[i].start === this.playerIndex)
+                {   
+                    this.playWormholeMusic();
+                    this.playingMusic = true;
+                    this.stopPlayer();
+                    this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].end,this.ufo,.9);
+                    this.playerIndex = this.level.wormholes[i].end
+                    this.complete =true;
+                    this.running =true;
+                }
+        }
         if(this.endstate){
             this.ufo.rotation += 0.025;
         }
@@ -560,6 +603,9 @@ class SceneMain extends Phaser.Scene {
             });
         this.tokens = this.tokens.filter(function(token) {
             return token.type !== TOKEN.NEWLINE ; 
+            });
+        this.tokens = this.tokens.filter(function(token) {
+            return token.type !== TOKEN.PAR ; 
             });
         var i =0;
         while (this.tokens[i]){
@@ -607,6 +653,27 @@ class SceneMain extends Phaser.Scene {
             return i;
                 
         }
+        else if(this.tokens[i].type == TOKEN.IF){
+            i++;
+            if(this.tokens[i].value == ufoMoves.ASTROID ){
+                this.pushIF(i, "A")
+            }
+            else if(this.tokens[i].value == ufoMoves.EMPTY){
+                this.pushIF(i, "E")
+            }
+            else if(this.tokens[i].value == ufoMoves.TARGET){
+                this.pushIF(i, "T")
+            }
+            else if(this.tokens[i].value == ufoMoves.OUTOFBOUNDS){
+                this.pushIF(i, "OB")
+            }
+
+            i++;
+            i = this.checkIndent(i);
+            i = this.getIfMoves(i);
+            return i;
+        }
+        
         i = this.checkIndent(i);
         return i;
     }
@@ -651,19 +718,35 @@ class SceneMain extends Phaser.Scene {
         for (var j = 0; j<iterations;j++){
             i= startIndex;
             while (startIndent<=this.indent){
+                
                 i = this.checkToken(i)
                 i++;
             }
+            
             this.indent = startIndent
         }
+        return i;
+    }
+    getIfMoves(i){
+        var startIndent= this.indent
+        while (startIndent<=this.indent){
+            this.isIF = true;
+            i = this.checkToken(i)
+            i++;
+        }
+        this.isIF = false;
+        this.indent = startIndent
         return i;
     }
     pushNumberOfActions(i, action){
         if(this.tokens[i].type == TOKEN.NUMBER){
             for(var j = 0; j<this.tokens[i].value; j++){
-                this.stackOfActions.push({action:action,line: this.tokens[i].line});
+                this.stackOfActions.push({action:action,line: this.tokens[i].line, boolIf: this.isIF});
             }
         }
+    }
+    pushIF(i, action){
+        this.stackOfActions.push({action:action,line: this.tokens[i].line, boolIf: this.isIF});
     }
     syntaxCheck(){
         var isGood = true;
@@ -753,6 +836,7 @@ class SceneMain extends Phaser.Scene {
        
         this.goalIndex = this.level.earth;
         this.astroidGroup = this.physics.add.group();
+        this.wormholeGroup = this.physics.add.group();
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
         this.createAstroids();
         this.earth=this.add.image(10,10,"wormhole");
@@ -799,6 +883,29 @@ class SceneMain extends Phaser.Scene {
             astroid.setDepth(0);
             this.astroidGroup.add(astroid);
             this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid,.8);
+        }
+        for(var i =0; i<this.level.wormholes.length; i++){
+            var wormholeStart
+            var wormholeEnd
+            if(this.level.wormholes[i].color ==="red"){
+                wormholeStart = this.physics.add.sprite(10,10,"redWormhole");
+                if(this.level.wormholes[i].end!= -1){
+                    wormholeEnd = this.physics.add.sprite(10,10,"redWormhole");
+                }
+            }
+            else{
+                wormholeStart = this.physics.add.sprite(10,10,"greenWormhole");
+                if(this.level.wormholes[i].end!= -1){
+                    wormholeEnd = this.physics.add.sprite(10,10,"greenWormhole");
+                }
+            }
+            this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].start, wormholeStart,.8);
+            wormholeStart.setVisible(this.level.wormholes[i].visible);
+            this.wormholeGroup.add(wormholeStart);
+            if(this.level.wormholes[i].end!= -1){
+                this.wormholeGroup.add(wormholeEnd);
+                this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].end, wormholeEnd,.8);
+            }
         }
     }
     hideAstroid(astroid){
@@ -897,6 +1004,7 @@ class SceneMain extends Phaser.Scene {
         this.isMovingForward = false;
         this.isShooting= false;
         this.HitAstroid=false;
+        this.isIF = false;
         this.playerIndex = gridPosistion;
         this.playerAngle = 0;
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
@@ -921,6 +1029,7 @@ class SceneMain extends Phaser.Scene {
         this.running = false;
         this.complete = true;
         this.playingMusic= false;
+        this.isIF = false;
         this.ufo.play("idle");
         //var pos =this.aGrid.indexPosition(this.playerIndex)
         this.ufo.setVelocityX(0);
@@ -1120,5 +1229,60 @@ class SceneMain extends Phaser.Scene {
         } else {
             this.ufo.setAngularVelocity(90);
         }
+    }
+    checkInFront(){
+        var myIndex = -1;
+        if(this.playerAngle == 0){
+            myIndex = this.getIndexUp(this.playerIndex);
+        }
+        else if(this.playerAngle == 90){
+            myIndex = this.getIndexRight(this.playerIndex)
+        }
+        else if(this.playerAngle == -180 || this.playerAngle == 180){
+            myIndex = this.getIndexDown(this.playerIndex)
+        }
+        else if(this.playerAngle == -90){
+            myIndex = this.getIndexLeft(this.playerIndex)
+        }
+        if(myIndex != -1){
+            return this.getObjectAt(myIndex);
+        }
+        return "OB";
+        
+    }
+    getIndexUp(index){
+        if(index<this.cols){
+            return -1
+        }
+        return index-this.rows
+    }
+    getIndexDown(index){
+        var boxes = this.cols*this.rows;
+        if(index >= boxes-this.cols){
+            return -1
+        }
+        return index+this.rows
+    }
+    getIndexRight(index){
+        if((index+1)%this.cols===0 && index!=0){
+            return -1
+        }
+        return index+1
+    }
+    getIndexLeft(index)
+    {
+        if(index%this.cols===0 && index!=0){
+            return -1
+        }
+        return index-1
+    }
+    getObjectAt(index){
+        var myObj = "E"
+        this.astroidGroup.getChildren().forEach(function(astroid){
+            if(this.aGrid.isAtIndex(index, astroid)){
+                myObj = "A"
+            }
+        },this);
+        return myObj
     }
 }

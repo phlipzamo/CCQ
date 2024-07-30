@@ -69,9 +69,10 @@
             </div>
             <div class = "modal-body">
                 <div class = "Options">
-                    <button data-modal-close = "#modalIF" onclick= "printNextTo('Astroid')">Astroid</button>
-                    <button data-modal-close = "#modalIF" onclick= "printNextTo('Target')">Target </button>
-                    <button data-modal-close = "#modalIF" onclick= "printNextTo('Empty')">Empty </button>
+                    <button data-modalIF-close = "#modalIF" onclick= "printNextTo('(AstroidInFront)')">Astroid</button>
+                    <button data-modalIF-close = "#modalIF" onclick= "printNextTo('(TargetInFront)')">Target </button>
+                    <button data-modalIf-close = "#modalIF" onclick= "printNextTo('(EmptyInFront)')">Empty </button>
+                    <button data-modalIf-close = "#modalIF" onclick= "printNextTo('(OutOfBoundsInFront)')">Out of bounds </button>
                 </div>
             </div>
         </div>
@@ -81,7 +82,7 @@
         <button id= "left" data-modal-open = "#modal" data-tooltip="Rotate 90 degrees to the left" onclick="print('rotate_left ')">ROTATE LEFT <i class="fas fa-undo"></i></button>
         <button id= "shoot"  data-tooltip="Shoot ahead" onclick="print('shoot 1')">SHOOT <i class="fas fa-bullseye"></i></button>
         <button id= "times" data-modal-open = "#modal" data-tooltip="Repeat chosen action" onclick="print('times')">TIMES <i class="fas fa-times"></i></button>
-        <button id= "if" data-modal-open = "#modalIF" onclick="print('if ')">If</button>
+        <button id= "if" data-modal-open = "#modalIF" onclick="print('if')">If</button>
     </div>
   
     <div id = "phaser-div" class="gamecontainer">

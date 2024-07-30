@@ -14,8 +14,10 @@
             {"place": 8}
         ],
         "wormholes": [
-            {"start": 0,"end":1}
+        ],
+        "targets": [
         ]
+
     },
     "level2": {
         "row": 3,
@@ -31,8 +33,10 @@
             {"place": 6}
         ],
         "wormholes": [
-            {"start": 0,"end":1}
+        ],
+        "targets": [
         ]
+
     },
     "level3": {
         "row": 3,
@@ -47,8 +51,10 @@
             {"place": 8}
         ],
         "wormholes": [
-            {"start": 0,"end":1}
+        ],
+        "targets": [
         ]
+
     },
     "level4": {
         "row": 3,
@@ -62,8 +68,10 @@
             {"place": 8}
         ],
         "wormholes": [
-            {"start": 0,"end":1}
+        ],
+        "targets": [
         ]
+
     },
     "level5": {
         "row": 4,
@@ -78,8 +86,10 @@
             {"place": 10}
         ],
         "wormholes": [
-            {"start": 0,"end":1}
+        ],
+        "targets": [
         ]
+
     },
     "level6": {
         "row": 4,
@@ -94,9 +104,11 @@
             {"place": 10},
             {"place": 13}
         ],
-        "wormholes": [
-            {"start": 0,"end":1}
+       "wormholes": [
+        ],
+        "targets": [
         ]
+
     },
     "level7": {
         "row": 4,
@@ -114,8 +126,11 @@
             {"place": 14}
         ],
         "wormholes": [
-            {"start": 5,"end":15}
+            {"color": "red", "start": 5, "end": 15, "visible": true}
+        ],
+        "targets": [
         ]
+
     },
     "level8": {
         "row": 5,
@@ -136,8 +151,10 @@
             {"place": 22}
         ],
         "wormholes": [
-            {"start": 5,"end":15}
+        ],
+        "targets": [
         ]
+
     },
     "level9": {
         "row": 5,
@@ -162,8 +179,13 @@
             {"place": 27}
         ],
         "wormholes": [
-            {"start": 13,"end":29}
+            {"color": "red", "start": 13, "end": -1, "visible": true},
+            {"color": "green", "start": 13, "end": 29, "visible": false}
+        ],
+        "targets": [
+            {"color": "green", "place":19}
         ]
+
     },
     "level10": {
         "row": 5,
@@ -188,8 +210,12 @@
             {"place": 25}
         ],
         "wormholes": [
-            {"start": 17,"end":29}
+           
+        ],
+        "targets": [
+            
         ]
+
     }
     
 }
