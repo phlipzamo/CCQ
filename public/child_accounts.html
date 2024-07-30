@@ -28,7 +28,8 @@
 
 <body>
     <div class="container">
-        <h2>Your Child Accounts</h2>
+        <h1>Your Child Accounts</h1>
+        <ul id="childDetails"></ul>
     </div>
 
     <script>
@@ -45,6 +46,32 @@
                 document.documentElement.classList.add('high-contrast');
             }
         }
+    </script>
+
+    <script>
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        let childAccountsCollection = db.collection('child_accounts');
+        const childDetails = document.getElementById('childDetails');
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                unsubscribe = childAccountsCollection
+                    .where('parent_uid', '==', user.uid)
+                    .onSnapshot(querySnapshot => {
+                        const items = querySnapshot.docs.map(doc => {
+                            return `<li>${doc.data().username}</li>`
+                        });
+                        // var newChild = document.createElement('p');
+                        // newChild.textContent = 'test';
+                        // document.body.append(newChild);
+                        childDetails.innerHTML = items.join('');
+
+                    });
+            } else {
+                unsubscribe && unsubscribe();
+            }
+        });
     </script>
     
 </body>
