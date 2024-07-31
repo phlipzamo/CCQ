@@ -29,7 +29,7 @@
 <body>
     <div class="container">
         <h1>Your Child Accounts</h1>
-        <ul id="childDetails"></ul>
+        <h4 id="childDetails"></h4>
     </div>
 
     <script>
@@ -60,18 +60,30 @@
                     .where('parent_uid', '==', user.uid)
                     .onSnapshot(querySnapshot => {
                         const items = querySnapshot.docs.map(doc => {
-                            return `<li>${doc.data().username}</li>`
+                            return `<h2>Child Account: ${doc.data().username}</h2>
+                                    <p>Level 1: ${doc.data().level1}</p>
+                                    <p>Level 2: ${doc.data().level2}</p>
+                                    <p>Level 3: ${doc.data().level3}</p>
+                                    <p>Level 4: ${doc.data().level4}</p>
+                                    <p>Level 5: ${doc.data().level5}</p>
+                                    <p>Level 6: ${doc.data().level6}</p>
+                                    <p>Level 7: ${doc.data().level7}</p>
+                                    <p>Level 8: ${doc.data().level8}</p>
+                                    <p>Level 9: ${doc.data().level9}</p>
+                                    <p>Level 10: ${doc.data().level10}</p>`
                         });
-                        // var newChild = document.createElement('p');
-                        // newChild.textContent = 'test';
-                        // document.body.append(newChild);
                         childDetails.innerHTML = items.join('');
-
                     });
             } else {
                 unsubscribe && unsubscribe();
             }
         });
+    </script>
+    <script>
+        setTimeout(() => {
+            document.body.innerHTML = document.body.innerHTML.replaceAll('undefined', 'Not Complete');
+            document.body.innerHTML = document.body.innerHTML.replaceAll('true', 'Completed');
+        }, 500);
     </script>
     
 </body>
