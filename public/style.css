@@ -203,6 +203,23 @@ form button {
     transition: transform 0.2s;
 }
 
+.disabled-level-box {
+    pointer-events: none;
+    cursor: not-allowed;
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(133, 133, 133, 0.8);
+    border: 2px solid #000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
 .level-box:hover {
     transform: scale(1.1);
 }
@@ -422,6 +439,7 @@ button[data-tooltip]:hover::after {
 .arrow:hover {
     background-color: rgba(0, 0, 0, 0.6);
 }
+
 /* Target the font awesome icon */
 .fa {
     /* Set initial color */
@@ -435,3 +453,4 @@ button[data-tooltip]:hover::after {
     /* Change color on hover */
     color: white;
   }
+
