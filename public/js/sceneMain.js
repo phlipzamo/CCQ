@@ -281,6 +281,7 @@ class SceneMain extends Phaser.Scene {
     preload()
     {
     	this.load.atlas("astroid", "assets/astroid.png", "assets/astroid.json");
+        this.load.atlas("scan", "assets/scan.png", "assets/scan.json");
         this.load.image("wormhole", "assets/Wormhole.png");
         this.load.image("greenWormhole", "assets/GreenWormhole.png");
 
@@ -365,6 +366,12 @@ class SceneMain extends Phaser.Scene {
             }, this);
             
         });
+        this.scan.on(Phaser.Animations.Events.ANIMATION_COMPLETE_KEY+"ScanOn", function () {
+            if(!this.complete){
+                this.scan.play("ScanOff")
+                this.complete = true;
+            }
+        }, this);
         this.physics.add.overlap(this.lasers, this.astroidGroup, (laser, astroid) =>
         {
             astroid.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
@@ -431,7 +438,26 @@ class SceneMain extends Phaser.Scene {
           })
     }
     update() {
-        
+        if(this.playerAngle == 0){
+            this.scan.angle = this.playerAngle;
+            this.scan.x = this.ufo.x;
+            this.scan.y = this.ufo.y -this.scanOffset;
+        }
+        else if(this.playerAngle == 90){
+            this.scan.angle = this.playerAngle;
+            this.scan.x = this.ufo.x+this.scanOffset;
+            this.scan.y = this.ufo.y;
+        }
+        else if(this.playerAngle == -180 || this.playerAngle == 180){
+            this.scan.angle = this.playerAngle;
+            this.scan.x = this.ufo.x;
+            this.scan.y = this.ufo.y +this.scanOffset;
+        }
+        else if(this.playerAngle == -90){
+            this.scan.angle = this.playerAngle;
+            this.scan.x = this.ufo.x-this.scanOffset;
+            this.scan.y = this.ufo.y;
+        }
         this.earth.rotation += 0.025;
         this.astroidGroup.getChildren().forEach(function(item, index){
             item.rotation+=.005;
@@ -841,6 +867,7 @@ class SceneMain extends Phaser.Scene {
         this.createAstroids();
         this.earth=this.add.image(10,10,"wormhole");
         this.earth.setDepth=0;
+        this.scan = this.physics.add.sprite(10,10,"scan");
         this.ufo = this.physics.add.sprite(10,10,"ufo").setCollideWorldBounds(true, 1, 1, true);
         this.ufo.body.onWorldBounds = true;
         this.ufo.setDepth=1;
@@ -849,7 +876,11 @@ class SceneMain extends Phaser.Scene {
         this.aGrid.show("0x05ed04");
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth,.8);
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
-        
+        this.aGrid.placeAndScaleAtIndex(this.playerIndex,this.scan,.9);
+        this.scan.x = this.ufo.x;
+        this.scanOffset = this.ufo.displayHeight*13/16;
+        this.scan.y = this.ufo.y - this.scanOffset;
+
         this.createPauseScreen();
         this.createSuccessScreen();
         var leveltext = "Level "+localStorage.getItem('level');
@@ -1116,6 +1147,18 @@ class SceneMain extends Phaser.Scene {
             frameRate: 16,
             repeat: 0
         });
+        this.anims.create({
+            key: 'ScanOn',
+            frames: this.anims.generateFrameNames('scan', {start: 0, end:16, zeroPad: 1, prefix: 'Scan', suffix: '.png'}),
+            frameRate: 20,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'ScanOff',
+            frames: this.anims.generateFrameNames('scan', {start: 0, end:0, zeroPad: 1, prefix: 'Scan', suffix: '.png'}),
+            frameRate: 20,
+            repeat: 0
+        });
     }
     
     requestPlayerMoveForward(){
@@ -1124,6 +1167,7 @@ class SceneMain extends Phaser.Scene {
         this.startX = this.ufo.x
         this.startY = this.ufo.y
         this.ufo.play("Forward");
+        
     }
     requestPlayerMoveRight(){
         this.isMovingRight= true;
@@ -1275,6 +1319,8 @@ class SceneMain extends Phaser.Scene {
         }
     }
     checkInFront(){
+        this.scan.play("ScanOn");
+        this.complete = false;
         var myIndex = -1;
         if(this.playerAngle == 0){
             myIndex = this.getIndexUp(this.playerIndex);
@@ -1288,6 +1334,7 @@ class SceneMain extends Phaser.Scene {
         else if(this.playerAngle == -90){
             myIndex = this.getIndexLeft(this.playerIndex)
         }
+        
         if(myIndex != -1){
             return this.getObjectAt(myIndex);
         }
