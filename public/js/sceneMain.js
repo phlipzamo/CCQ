@@ -296,6 +296,7 @@ class SceneMain extends Phaser.Scene {
         this.load.html("home", "assets/home.html");
         this.load.html("levelSelect", "assets/levelSelect.html");
         this.load.html("info", "assets/info.html");
+        this.load.atlas("target", "assets/cowufo.png", "assets/cowufo.json");
     }
     create() {
         this.mute = this.add.dom(0,0).createFromCache("mute");
@@ -1345,14 +1346,14 @@ class SceneMain extends Phaser.Scene {
         if(index<this.cols){
             return -1
         }
-        return index-this.rows
+        return index-this.cols
     }
     getIndexDown(index){
         var boxes = this.cols*this.rows;
         if(index >= boxes-this.cols){
             return -1
         }
-        return index+this.rows
+        return index+this.cols
     }
     getIndexRight(index){
         if((index+1)%this.cols===0 && index!=0){
