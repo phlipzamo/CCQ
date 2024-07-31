@@ -287,7 +287,7 @@ class SceneMain extends Phaser.Scene {
         this.load.atlas("portal", "assets/portal.png","assets/portal.json");
        
         this.load.atlas("ufo", "assets/cowufo.png", "assets/cowufo.json");
-        this.load.image("earth", "assets/earth.png");
+        this.load.image("earth", "assets/Globe.png");
         this.load.json('level', 'assets/Levels/levels.json');
         this.load.audio("background", "assets/space.ogg");
         this.load.audio("wormhole","assets/Wormhole.wav");
@@ -330,7 +330,7 @@ class SceneMain extends Phaser.Scene {
         }
         this.wormholeAudio.play(musicConfig);
         this.wormholeAudio.pause();
-        this.lasers = new Lasers(this);
+        
         this.stackOfActions=[]
         this.isMovingRight = false;
         this.isMovingLeft = false;
@@ -347,7 +347,7 @@ class SceneMain extends Phaser.Scene {
         
         this.createLevel();
         this.animationCreate();
-        
+        this.lasers = new Lasers(this);
         
         if(this.level.wormholes){
             if(this.level.wormholes.startColor ==="red"){
@@ -415,18 +415,23 @@ class SceneMain extends Phaser.Scene {
             }
         }
         );
+        
         if(this.target){
             this.physics.add.overlap(this.target, this.lasers, (target,laser) =>
                 {
-                    if(this.target.anims.getName()==="RedTarget"){
-                        this.target.play("GreenTarget");
-                        this.wormholeStart.play("red");
+                    this.laserDistance = (laser.x-target.x)+ (laser.y-target.y)
+                    if(Math.abs(this.laserDistance)<=5){
+                        if(this.target.anims.getName()==="RedTarget"){
+                            this.target.play("GreenTarget");
+                            this.wormholeStart.play("red");
+                        }
+                        else{
+                            this.target.play("RedTarget");
+                            this.wormholeStart.play("green");
+                        }
+                        laser.destroy();
+                    
                     }
-                    else{
-                        this.target.play("RedTarget");
-                        this.wormholeStart.play("green");
-                    }
-                    laser.destroy();
                 }
             );
         }
@@ -911,7 +916,12 @@ class SceneMain extends Phaser.Scene {
 
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
         this.createInteractableAssets();
-        this.earth=this.add.image(10,10,"wormhole");
+
+        if(selectedLevel===10){
+            this.earth=this.add.image(10,10,"earth");}
+        else{
+            this.earth=this.add.image(10,10,"wormhole");}
+        
         this.earth.setDepth=0;
         this.scan = this.physics.add.sprite(10,10,"scan");
         this.ufo = this.physics.add.sprite(10,10,"ufo").setCollideWorldBounds(true, 1, 1, true);
@@ -960,8 +970,8 @@ class SceneMain extends Phaser.Scene {
             this.laserEmpty.setVisible(false);
             var laserBar
             laserBar = this.add.graphics();
-            laserBar.fillStyle(0x05ed04, 1.0);
-            laserBar.fillRect(0, 0, 5, 15);
+            laserBar.fillStyle(0x32f4f9, 1.0);
+            laserBar.fillRect(0, 0, 10, 15);
             laserBar.x = text_Laser.x + 80
             laserBar.y = text_Laser.y+5
             this.laserUIGroup.add(laserBar);
@@ -969,9 +979,9 @@ class SceneMain extends Phaser.Scene {
             var nextLaserBar
             for(var i = 1; i<this.level.lasers; i++){
                 nextLaserBar = this.add.graphics();
-                nextLaserBar.fillStyle(0x05ed04, 1.0);
-                nextLaserBar.fillRect(0, 0, 5, 15);
-                nextLaserBar.x = laserBar.x + 7
+                nextLaserBar.fillStyle(0x32f4f9, 1.0);
+                nextLaserBar.fillRect(0, 0, 10, 15);
+                nextLaserBar.x = laserBar.x + 12
                 nextLaserBar.y = laserBar.y
                 this.laserUIGroup.add(nextLaserBar);
                 laserBar = nextLaserBar;
@@ -1068,6 +1078,10 @@ class SceneMain extends Phaser.Scene {
         .setInteractive()
         .on('pointerdown', () => {var selectedLevel = Number(localStorage.getItem('level'));
             selectedLevel = selectedLevel+1;
+            if(selectedLevel ==11){
+                location.href='difficulty.html';
+                return;
+            }
             localStorage.setItem('level',selectedLevel.toString());
             document.cookie = `level=${selectedLevel}`;
             location.href='game.html';})

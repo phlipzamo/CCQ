@@ -15,7 +15,7 @@ if (document.URL.includes("game.html") ) {
         physics: {
             default: 'arcade',
             arcade: {
-                debug: true
+                debug: false
             }
         },
         dom: {
@@ -35,7 +35,7 @@ else {
         physics: {
             default: 'arcade',
             arcade: {
-                debug: true
+                debug: false
             }
         },
         dom: {
