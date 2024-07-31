@@ -5,8 +5,13 @@ const fwdButton = document.querySelector(".fwd")
 const rightButton = document.querySelector('.right') 
 const leftButton = document.querySelector('.left') 
 const shootButton = document.querySelector('.shoot') 
-const timesButton = document.querySelector('.times') 
-const ifButton = document.querySelector('.if') 
+const times1Button = document.querySelector('.times1') 
+const ifAButton = document.querySelector('.ifA') 
+const times2Button = document.querySelector('.times2') 
+const ifEButton = document.querySelector('.ifE') 
+const times3Button = document.querySelector('.times3') 
+const ifTButton = document.querySelector('.ifT') 
+const ifOBButton = document.querySelector('.ifOB') 
 
 function change (iconID){
     if(document.getElementById(iconID).className=="fa-solid fa-volume-xmark fa-xl"){
@@ -292,7 +297,6 @@ class SceneMain extends Phaser.Scene {
         });
         fwdButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "Forward";
             this.stopPlayer();
             this.setPlayer(this.level.ufo);
             this.stackOfActions.length = 0;
@@ -303,7 +307,6 @@ class SceneMain extends Phaser.Scene {
         }) 
         rightButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "Right";
             this.stopPlayer();
             this.setPlayer(this.level.ufo);
             this.stackOfActions.length = 0;
@@ -314,7 +317,6 @@ class SceneMain extends Phaser.Scene {
         }) 
         leftButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "Left";
             this.stopPlayer();
             this.setPlayer(this.level.ufo);
             this.stackOfActions.length = 0;
@@ -325,7 +327,6 @@ class SceneMain extends Phaser.Scene {
         }) 
         shootButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "Shoot";
             this.stopPlayer();
             this.unHideLaserUI();
             this.setPlayer(this.level.ufo);
@@ -335,9 +336,19 @@ class SceneMain extends Phaser.Scene {
             this.running = true;
             this.complete = true;
         }) 
-        ifButton.addEventListener('click', e => { 
+        ifAButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "If";
+            this.stopPlayer();
+            this.unHideLaserUI();
+            this.setPlayer(this.level.ufo);
+            this.stackOfActions.length = 0;
+            this.stackOfActions.push({action:"A",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"R",line: 0, boolIf: true});
+            this.running = true;
+            this.complete = true;
+        }) 
+        ifEButton.addEventListener('click', e => { 
+
             this.stopPlayer();
             this.unHideLaserUI();
             this.setPlayer(this.level.ufo);
@@ -347,9 +358,51 @@ class SceneMain extends Phaser.Scene {
             this.running = true;
             this.complete = true;
         }) 
-        timesButton.addEventListener('click', e => { 
+        ifOBButton.addEventListener('click', e => { 
 
-            document.getElementById("myspan").textContent = "times";
+            this.stopPlayer();
+            this.unHideLaserUI();
+            this.setPlayer(this.level.ufo);
+            this.stackOfActions.length = 0;
+            this.stackOfActions.push({action:"OB",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: true});
+            this.running = true;
+            this.complete = true;
+        }) 
+        ifTButton.addEventListener('click', e => { 
+
+            this.stopPlayer();
+            this.unHideLaserUI();
+            this.setPlayer(this.level.ufo);
+            this.stackOfActions.length = 0;
+            this.stackOfActions.push({action:"T",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"S",line: 0, boolIf: true});
+            this.running = true;
+            this.complete = true;
+        }) 
+        times1Button.addEventListener('click', e => { 
+
+            this.stopPlayer();
+            this.unHideLaserUI();
+            this.setPlayer(this.level.ufo);
+            this.stackOfActions.length = 0;
+            this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.running = true;
+            this.complete = true;
+        }) 
+        times2Button.addEventListener('click', e => { 
+
+            this.stopPlayer();
+            this.unHideLaserUI();
+            this.setPlayer(this.level.ufo);
+            this.stackOfActions.length = 0;
+            this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.running = true;
+            this.complete = true;
+        })
+        times3Button.addEventListener('click', e => { 
+
             this.stopPlayer();
             this.unHideLaserUI();
             this.setPlayer(this.level.ufo);
@@ -359,7 +412,7 @@ class SceneMain extends Phaser.Scene {
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
-        }) 
+        })
     }
     update() {
         if(this.playerAngle == 0){

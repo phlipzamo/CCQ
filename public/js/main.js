@@ -29,7 +29,7 @@ else {
     var config = {
         type: Phaser.AUTO,
         width:500,
-        height: 500,
+        height: 490,
         parent: 'phaser-div',
         
         physics: {

@@ -291,6 +291,11 @@ class SceneMain extends Phaser.Scene {
         this.load.json('level', 'assets/Levels/levels.json');
         this.load.audio("background", "assets/space.ogg");
         this.load.audio("wormhole","assets/Wormhole.wav");
+        this.load.audio("rocketSounds","assets/rocketsound.mp3");
+        this.load.audio("scanSounds","assets/scanSound.mp3");
+        this.load.audio("laserSound","assets/Laser.wav");
+        this.load.audio("crashSound","assets/crashSound.mp3");
+        this.load.audio("astroidExplodeSound","assets/asteroidhit.mp3");
         this.load.image("laser", "assets/Laser.png");
         this.load.html("mute", "assets/mute.html");
         this.load.html("home", "assets/home.html");
@@ -331,6 +336,17 @@ class SceneMain extends Phaser.Scene {
         this.wormholeAudio.play(musicConfig);
         this.wormholeAudio.pause();
         
+        this.astroidExplodeSound = this.sound.add("astroidExplodeSound");
+      
+        this.crashSound = this.sound.add("crashSound");
+    
+        this.laserSound = this.sound.add("laserSound");
+        
+        this.scanSounds = this.sound.add("scanSounds");
+        
+        this.rocketSounds = this.sound.add("rocketSounds");
+        
+
         this.stackOfActions=[]
         this.isMovingRight = false;
         this.isMovingLeft = false;
@@ -373,6 +389,22 @@ class SceneMain extends Phaser.Scene {
         {   
             if(this.endstate){return}
             if(this.firstTime){
+                this.crashSound.play({
+                    volume:1,
+                    rate: 1,
+                    detune:0,
+                    seek: 0,
+                    loop: false,
+                    delay: 0
+                });
+                this.astroidExplodeSound.play({
+                    volume:1,
+                    rate: 1,
+                    detune:0,
+                    seek: 0,
+                    loop: false,
+                    delay: 0
+                });
                 astroid.play("Explode");
                 this.firstTime = false;
                 this.stopPlayer();
@@ -397,6 +429,14 @@ class SceneMain extends Phaser.Scene {
         }, this);
         this.physics.add.overlap(this.lasers, this.astroidGroup, (laser, astroid) =>
         {
+            this.astroidExplodeSound.play({
+                volume:1,
+                rate: 1,
+                detune:0,
+                seek: 0,
+                loop: false,
+                delay: 0
+            });
             astroid.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
                 if(this.complete === true){return;}
                 this.hideAstroid(astroid);
@@ -435,9 +475,48 @@ class SceneMain extends Phaser.Scene {
                 }
             );
         }
-        
+        this.ufo.on(Phaser.Animations.Events.ANIMATION_START, function () {
+            if(this.ufo.anims.currentAnim.key != "idle"){
+                this.rocketSounds.play({
+                    volume:.5,
+                    rate: 1,
+                    detune:0,
+                    seek: 0,
+                    loop: false,
+                    delay: 0
+                });
+
+            }
+            else{
+                this.rocketSounds.stop();
+            }
+        }, this);
+        this.scan.on(Phaser.Animations.Events.ANIMATION_START, function () {
+            if(this.scan.anims.currentAnim.key != "ScanOff"){
+                this.scanSounds.play({
+                    volume:4,
+                    rate: 1,
+                    detune:0,
+                    seek: 0,
+                    loop: false,
+                    delay: 0
+                });
+            }
+            else{
+                this.scanSounds.stop();
+            }
+        }, this);
         this.physics.world.on('worldbounds', (body, up, down, left, right) =>
         {
+            this.crashSound.play({
+                volume:1,
+                rate: 1,
+                detune:0,
+                seek: 0,
+                loop: false,
+                delay: 0
+            });
+
             this.stopPlayer()
             //this.setPlayer(this.level.ufo);
             this.audio.stop();
@@ -1052,7 +1131,9 @@ class SceneMain extends Phaser.Scene {
             //this.astroidGroup.clear(true, true);
             this.unhideAllAstroid();
             this.unHideLaserUI();
-            this.setWormHole();
+            if(this.wormholeStart){
+                this.setWormHole();
+            }
         })
         .on('pointerover', () => this.enterButtonHoverState(resetButton, "#FF0000") )
         .on('pointerout', () => this.enterButtonRestState(resetButton,"#FF0000") );
@@ -1266,6 +1347,14 @@ class SceneMain extends Phaser.Scene {
             this.complete = false;
             this.laserUIGroup.getChildren()[--this.laserAmount].setVisible(false);
             this.lasers.fireLaser(this.ufo.x, this.ufo.y, this.playerAngle);
+            this.laserSound.play({
+                volume:1,
+                rate: 1,
+                detune:0,
+                seek: 0,
+                loop: false,
+                delay: 0
+            });
             if(this.laserAmount===0){
                 this.laserEmpty.setVisible(true);
             }
