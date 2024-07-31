@@ -1,0 +1,62 @@
+{
+	"textures": [
+		{
+			"image": "portal.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 124,
+				"h": 62
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "GreenWormhole1.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 2,
+						"w": 60,
+						"h": 60
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 60,
+						"h": 60
+					}
+				},
+				{
+					"filename": "RedWormhole1.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 2,
+						"w": 60,
+						"h": 60
+					},
+					"frame": {
+						"x": 63,
+						"y": 1,
+						"w": 60,
+						"h": 60
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:b4d4593b8e686a3c08b56ca4dc3ce612:016d307862e2a5f48bb902c331b102fd:3b79c46182e6baa2a6b599ce58bd77b1$"
+	}
+}

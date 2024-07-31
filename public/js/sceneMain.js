@@ -283,9 +283,9 @@ class SceneMain extends Phaser.Scene {
     	this.load.atlas("astroid", "assets/astroid.png", "assets/astroid.json");
         this.load.atlas("scan", "assets/scan.png", "assets/scan.json");
         this.load.image("wormhole", "assets/Wormhole.png");
-        this.load.image("greenWormhole", "assets/GreenWormhole.png");
 
-        this.load.image("redWormhole", "assets/RedWormhole.png");
+        this.load.atlas("portal", "assets/portal.png","assets/portal.json");
+       
         this.load.atlas("ufo", "assets/cowufo.png", "assets/cowufo.json");
         this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
@@ -296,7 +296,7 @@ class SceneMain extends Phaser.Scene {
         this.load.html("home", "assets/home.html");
         this.load.html("levelSelect", "assets/levelSelect.html");
         this.load.html("info", "assets/info.html");
-        this.load.atlas("target", "assets/cowufo.png", "assets/cowufo.json");
+        this.load.atlas("target", "assets/target.png", "assets/target.json");
     }
     create() {
         this.mute = this.add.dom(0,0).createFromCache("mute");
@@ -344,9 +344,34 @@ class SceneMain extends Phaser.Scene {
         this.endstate = false;
         this.firstTime = true;
         this.isIF = false;
+        this.wormholeStart = this.physics.add.sprite(10,10,"portal");
+        this.wormholeEnd = this.physics.add.sprite(10,10,"portal");
+        this.target = this.physics.add.sprite(10,10,"target");
         this.createLevel();
         this.animationCreate();
-    
+        
+        
+
+        if(this.level.wormholes.startColor ==="red"){
+            this.wormholeStart.play("red");
+        }
+        else{
+            this.wormholeStart.play("green");
+        }
+        if(this.level.wormholes.endColor ==="red"){
+            this.wormholeEnd.play("red");
+            this.target.play("RedTarget")
+        }
+        else{
+            this.wormholeEnd.play("green");
+            this.target.play("GreenTarget")
+        }
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.start, this.wormholeStart,.8);
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.end, this.wormholeEnd,.8);
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.target, this.target,.8);
+
+        
+
         this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroid) =>
         {   
             if(this.endstate){return}
@@ -400,6 +425,19 @@ class SceneMain extends Phaser.Scene {
             //this.uiFailedGroup.setVisible(true);
             //disableScriptBtns();
         }
+        );
+        this.physics.add.overlap(this.target, this.lasers, (target,laser) =>
+            {
+                if(this.target.anims.getName()==="RedTarget"){
+                    this.target.play("GreenTarget");
+                    this.wormholeStart.play("red");
+                }
+                else{
+                    this.target.play("RedTarget");
+                    this.wormholeStart.play("green");
+                }
+                laser.destroy();
+            }
         );
         this.physics.world.on('worldbounds', (body, up, down, left, right) =>
         {
@@ -463,9 +501,11 @@ class SceneMain extends Phaser.Scene {
         this.astroidGroup.getChildren().forEach(function(item, index){
             item.rotation+=.005;
         })
-        this.wormholeGroup.getChildren().forEach(function(item, index){
-            item.rotation+=.050;
-        })
+       
+        this.wormholeStart.rotation+=.050;
+    
+        this.wormholeEnd.rotation+=.050;
+       
         if(this.running){
             //if complete get next action
             if(this.complete){
@@ -573,18 +613,24 @@ class SceneMain extends Phaser.Scene {
             }
             
         }
-        for(var i =0; i<this.level.wormholes.length; i++){
-            if(this.level.wormholes[i].start === this.playerIndex)
-                {   
-                    this.playWormholeMusic();
-                    this.playingMusic = true;
-                    this.stopPlayer();
-                    this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].end,this.ufo,.9);
-                    this.playerIndex = this.level.wormholes[i].end
-                    this.complete =true;
-                    this.running =true;
-                }
+       
+        if(this.level.wormholes.start === this.playerIndex)
+        {   
+            if(this.wormholeStart.anims.getName()=== this.wormholeEnd.anims.getName()){
+                this.playWormholeMusic();
+                this.playingMusic = true;
+                this.stopPlayer();
+                this.aGrid.placeAndScaleAtIndex(this.level.wormholes.end,this.ufo,.9);
+                this.playerIndex = this.level.wormholes.end
+                this.complete =true;
+                this.running =true;
+            } 
+            else{
+                this.stackOfActions.length = 0;
+            }
         }
+        
+        
         if(this.endstate){
             this.ufo.rotation += 0.025;
         }
@@ -863,9 +909,10 @@ class SceneMain extends Phaser.Scene {
        
         this.goalIndex = this.level.earth;
         this.astroidGroup = this.physics.add.group();
-        this.wormholeGroup = this.physics.add.group();
+
+
         this.aGrid= new AlignGrid({scene: this, cols: this.cols, rows: this.rows});
-        this.createAstroids();
+        this.createInteractableAssets();
         this.earth=this.add.image(10,10,"wormhole");
         this.earth.setDepth=0;
         this.scan = this.physics.add.sprite(10,10,"scan");
@@ -874,6 +921,7 @@ class SceneMain extends Phaser.Scene {
         this.ufo.setDepth=1;
         this.playerIndex = this.level.ufo;
         this.playerAngle = 0;
+
         this.aGrid.show("0x05ed04");
         this.aGrid.placeAndScaleAtIndex(this.goalIndex, this.earth,.8);
         this.aGrid.placeAndScaleAtIndex(this.playerIndex, this.ufo,.9);
@@ -934,37 +982,31 @@ class SceneMain extends Phaser.Scene {
             }
         }
     }
-    
-    createAstroids(){
+    setWormHole(){
+        if(this.level.wormholes.startColor ==="red"){
+            this.wormholeStart.play("red");
+        }
+        else{
+            vwormholeStart.play("green");
+        }
+        if(this.level.wormholes.endColor ==="red"){
+            this.wormholeEnd.play("red");
+            this.target.play("RedTarget")
+        }
+        else{
+            this.wormholeEnd.play("green");
+            this.target.play("GreenTarget")
+        }
+    }
+    createInteractableAssets(){
         for(var i =0; i<this.level.astroids.length; i++){
             var astroid=this.physics.add.sprite(10,10,"astroid");
             astroid.setDepth(0);
             this.astroidGroup.add(astroid);
             this.aGrid.placeAndScaleAtIndex(this.level.astroids[i].place, astroid,.8);
         }
-        for(var i =0; i<this.level.wormholes.length; i++){
-            var wormholeStart
-            var wormholeEnd
-            if(this.level.wormholes[i].color ==="red"){
-                wormholeStart = this.physics.add.sprite(10,10,"redWormhole");
-                if(this.level.wormholes[i].end!= -1){
-                    wormholeEnd = this.physics.add.sprite(10,10,"redWormhole");
-                }
-            }
-            else{
-                wormholeStart = this.physics.add.sprite(10,10,"greenWormhole");
-                if(this.level.wormholes[i].end!= -1){
-                    wormholeEnd = this.physics.add.sprite(10,10,"greenWormhole");
-                }
-            }
-            this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].start, wormholeStart,.8);
-            wormholeStart.setVisible(this.level.wormholes[i].visible);
-            this.wormholeGroup.add(wormholeStart);
-            if(this.level.wormholes[i].end!= -1){
-                this.wormholeGroup.add(wormholeEnd);
-                this.aGrid.placeAndScaleAtIndex(this.level.wormholes[i].end, wormholeEnd,.8);
-            }
-        }
+        
+       
     }
     hideAstroid(astroid){
         astroid.setVisible(false);
@@ -1003,6 +1045,7 @@ class SceneMain extends Phaser.Scene {
             //this.astroidGroup.clear(true, true);
             this.unhideAllAstroid();
             this.unHideLaserUI();
+            this.setWormHole();
         })
         .on('pointerover', () => this.enterButtonHoverState(resetButton, "#FF0000") )
         .on('pointerout', () => this.enterButtonRestState(resetButton,"#FF0000") );
@@ -1160,6 +1203,30 @@ class SceneMain extends Phaser.Scene {
             frameRate: 20,
             repeat: 0
         });
+        this.anims.create({
+            key: 'GreenTarget',
+            frames: this.anims.generateFrameNames('target', {start: 1, end:5, zeroPad: 1, prefix: 'Green', suffix: '.png'}),
+            frameRate: 2,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'RedTarget',
+            frames: this.anims.generateFrameNames('target', {start: 1, end:5, zeroPad: 1, prefix: 'Red', suffix: '.png'}),
+            frameRate: 2,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'green',
+            frames: this.anims.generateFrameNames('portal', {start: 1, end:1, zeroPad: 1, prefix: 'GreenWormhole', suffix: '.png'}),
+            frameRate: 1,
+            repeat: 0
+        });
+        this.anims.create({
+            key: 'red',
+            frames: this.anims.generateFrameNames('portal', {start: 1, end:1, zeroPad: 1, prefix: 'RedWormhole', suffix: '.png'}),
+            frameRate: 1,
+            repeat: 0
+        });
     }
     
     requestPlayerMoveForward(){
@@ -1185,7 +1252,7 @@ class SceneMain extends Phaser.Scene {
             this.isShooting= true;
             this.complete = false;
             this.laserUIGroup.getChildren()[--this.laserAmount].setVisible(false);
-            this.lasers.fireLaser(this.ufo.x, this.ufo.y - 20, this.playerAngle);
+            this.lasers.fireLaser(this.ufo.x, this.ufo.y, this.playerAngle);
             if(this.laserAmount===0){
                 this.laserEmpty.setVisible(true);
             }
@@ -1375,6 +1442,9 @@ class SceneMain extends Phaser.Scene {
                 myObj = "A"
             }
         },this);
+        if(this.aGrid.isAtIndex(index, this.target)){
+            myObj = "T"
+        }
         return myObj
     }
 }

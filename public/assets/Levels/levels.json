@@ -169,7 +169,7 @@
         "col": 6,
         "ufo": 24,
         "earth":0,
-        "lasers":0,
+        "lasers":1,
         
         "astroids": [
             {"place": 4},
@@ -185,15 +185,10 @@
             {"place": 18},
             {"place": 21},
             {"place": 23},
+            {"place": 26},
             {"place": 27}
         ],
-        "wormholes": [
-            {"color": "red", "start": 13, "end": -1, "visible": true},
-            {"color": "green", "start": 13, "end": 29, "visible": false}
-        ],
-        "targets": [
-            {"color": "green", "place":19}
-        ]
+        "wormholes": {"startColor": "red", "start": 13, "endColor": "green","end": 29,"target": 20 }
 
     },
     "level10": {
