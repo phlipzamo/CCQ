@@ -113,7 +113,7 @@
         "col": 5,
         "ufo": 20,
         "earth":0,
-        "lasers":0,
+        "lasers":1,
         
         "astroids": [
             {"place": 5},
@@ -121,11 +121,14 @@
             {"place": 7},
             {"place": 8},
             {"place": 10},
+            {"place": 11},
+            {"place": 12},
             {"place": 13},
             {"place": 15},
-            {"place": 17},
-            {"place": 18},
-            {"place": 22}
+            {"place": 19},
+            {"place": 22},
+            {"place": 23},
+            {"place": 24}
         ]
     },
     "level9": {

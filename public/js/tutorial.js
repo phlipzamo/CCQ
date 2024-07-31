@@ -621,8 +621,8 @@ class SceneMain extends Phaser.Scene {
             this.laserEmpty.setVisible(false);
             var laserBar
             laserBar = this.add.graphics();
-            laserBar.fillStyle(0x05ed04, 1.0);
-            laserBar.fillRect(0, 0, 5, 15);
+            laserBar.fillStyle(0x32f4f9, 1.0);
+            laserBar.fillRect(0, 0, 10, 15);
             laserBar.x = text_Laser.x + 80
             laserBar.y = text_Laser.y+5
             this.laserUIGroup.add(laserBar);
@@ -630,9 +630,9 @@ class SceneMain extends Phaser.Scene {
             var nextLaserBar
             for(var i = 1; i<this.level.lasers; i++){
                 nextLaserBar = this.add.graphics();
-                nextLaserBar.fillStyle(0x05ed04, 1.0);
-                nextLaserBar.fillRect(0, 0, 5, 15);
-                nextLaserBar.x = laserBar.x + 7
+                nextLaserBar.fillStyle(0x32f4f9, 1.0);
+                nextLaserBar.fillRect(0, 0, 10, 15);
+                nextLaserBar.x = laserBar.x + 12
                 nextLaserBar.y = laserBar.y
                 this.laserUIGroup.add(nextLaserBar);
                 laserBar = nextLaserBar;
