@@ -160,24 +160,30 @@
         "col": 6,
         "ufo": 24,
         "earth":4,
-        "lasers":0,
+        "lasers":2,
         
         "astroids": [
-            {"place": 0},
-            {"place": 1},
-            {"place": 2},
-            {"place": 3},
             {"place": 8},
             {"place": 9},
             {"place": 10},
-            {"place": 12},
             {"place": 13},
             {"place": 15},
             {"place": 16},
+            {"place": 17},
             {"place": 19},
             {"place": 23},
-            {"place": 25}
-        ]
+            {"place": 25},
+
+            {"place": 26},
+            {"place": 29}
+        ],
+        "wormholes": {
+            "startColor": "red", 
+            "start": 18, 
+            "endColor": "green",
+            "end": 28,
+            "target": 0 }
+
     },
     "tutorial": {
         "row": 3,
