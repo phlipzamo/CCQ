@@ -6,56 +6,40 @@
     <title>Tutorial</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
 </head>
-<body>
-    <div class="tutorial-container">
-        <header>
-            <h1>Tutorial</h1>
-        </header>
-        <nav class="tutorial-navigation">
-            <button onclick="showStep(1)">FORWARD</button>
-            <button onclick="showStep(2)">ROTATE RIGHT</button>
-            <button onclick="showStep(3)">ROTATE LEFT</button>
-            <button onclick="showStep(4)">BACKWARD</button>
-            <button onclick="showStep(5)">SHOOT</button>
-            <button onclick="showStep(6)">TIMES</button>
-        </nav>
-        <main class="tutorial-content">
-            <div class="arrow left-arrow" onclick="prevImage()">&#10094;</div>
-            <div class="arrow right-arrow" onclick="nextImage()">&#10095;</div>
-            <div id="step-1" class="step">
-                <h3>FORWARD</h3>
-                <img src="images/step1-1.jpg" alt="Step 1 Image 1">
-                <img src="images/step1-2.jpg" alt="Step 1 Image 2" style="display:none;">
-                <img src="images/step1-3.jpg" alt="Step 1 Image 3" style="display:none;">
+    <body>
+        <div class="tutorial-container">
+            <header>
+                <h1>Tutorial</h1>
+            </header>
+            <nav class="tutorial-navigation">
+                <button class ="fwd">FORWARD</button>
+                <button class="right">ROTATE RIGHT</button>
+                <button class="left">ROTATE LEFT</button>
+                <button class ="shoot">SHOOT</button>
+                <button class ="times">TIMES</button>
+                <button class="if">IF</button>
+            </nav> 
+            <div style="width: 100%; display: table;">
+                <div style="display: table-row">
+                    <span id="myspan" class="container-tutorial">
+                    </span>
+                    <div id = "phaser-div" class="gamecontainer-tutorial">
+                        <!-- Game grid for graphics -->
+                    </div>
+                </div>
             </div>
-            <div id="step-2" class="step">
-                <h3>ROTATE RIGHT</h3>
-                <img src="images/step2-1.jpg" alt="Step 2 Image 1">
-                <img src="images/step2-2.jpg" alt="Step 2 Image 2" style="display:none;">
-            </div>
-            <div id="step-3" class="step">
-                <h3>ROTATE LEFT</h3>
-                <img src="images/step3-1.jpg" alt="Step 2 Image 1">
-                <img src="images/step3-2.jpg" alt="Step 2 Image 2" style="display:none;">
-            </div>
-            <div id="step-4" class="step">
-                <h3>BACKWARD</h3>
-                <img src="images/step4-1.jpg" alt="Step 2 Image 1">
-                <img src="images/step4-2.jpg" alt="Step 2 Image 2" style="display:none;">
-            </div>
-            <div id="step-5" class="step">
-                <h3>SHOOT</h3>
-                <img src="images/step5-1.jpg" alt="Step 2 Image 1">
-                <img src="images/step5-2.jpg" alt="Step 2 Image 2" style="display:none;">
-            </div>
-            <div id="step-6" class="step">
-                <h3>TIMES</h3>
-                <img src="images/step6-1.jpg" alt="Step 2 Image 1">
-                <img src="images/step6-2.jpg" alt="Step 2 Image 2" style="display:none;">
-            </div>         
-        </main>
-    </div>
-    <script javascript not done yet </script>
-</body>
+        </div>
+        <script src="js/phaser/phaser.js">  
+        </script>
+        <script src="js/util/align.js">  
+        </script>
+        <script src="js/util/alignGrid.js">  
+        </script>
+        <script src="js/util/UIBlock.js">  
+        </script>
+        <script src="js/tutorial.js"></script>
+        <script src="js/main.js"></script>
+    </body>
 </html>

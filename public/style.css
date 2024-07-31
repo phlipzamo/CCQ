@@ -144,7 +144,38 @@ button:disabled {
     align-items: center;
     z-index: 2;
 }
+.gamecontainer-tutorial {
+    width: 93%;
+    height: 70%;
+    max-width: 600px;
+    max-height: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: table-cell;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    float: left;
+}
 
+.container-tutorial {
+    width: 70%;
+    height: 70%;
+    max-width: 600px;
+    max-height: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(0, 0, 50, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0 20px #000;
+    display: table-cell;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+}
 form {
     text-align: center;
     width: 100%;
@@ -331,6 +362,8 @@ button[data-tooltip]:hover::after {
 .tutorial-container {
     width: 90%;
     max-width: 1200px;
+    height: 90%;
+    max-height: 1200px;
     margin: 0 auto;
     padding: 20px;
     background: rgba(0, 0, 50, 0.6);

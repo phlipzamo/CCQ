@@ -13,10 +13,6 @@
             {"place": 5},
             {"place": 6},
             {"place": 8}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
 
     },
@@ -33,11 +29,8 @@
             {"place": 3},
             {"place": 5},
             {"place": 6}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
+        
 
     },
     "level3": {
@@ -52,12 +45,7 @@
             {"place": 1},
             {"place": 3},
             {"place": 8}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
-
     },
     "level4": {
         "row": 3,
@@ -70,12 +58,7 @@
             {"place": 4},
             {"place": 5},
             {"place": 8}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
-
     },
     "level5": {
         "row": 4,
@@ -89,12 +72,7 @@
             {"place": 6},
             {"place": 9},
             {"place": 10}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
-
     },
     "level6": {
         "row": 4,
@@ -109,12 +87,7 @@
             {"place": 6},
             {"place": 10},
             {"place": 13}
-        ],
-       "wormholes": [
-        ],
-        "targets": [
         ]
-
     },
     "level7": {
         "row": 4,
@@ -132,11 +105,7 @@
             {"place": 13},
             {"place": 14}
         ],
-        "wormholes": [
-            {"color": "red", "start": 5, "end": 15, "visible": true}
-        ],
-        "targets": [
-        ]
+        "wormholes": {"startColor": "red", "start": 5, "endColor": "red","end": 15,"target": 0 }
 
     },
     "level8": {
@@ -157,12 +126,7 @@
             {"place": 17},
             {"place": 18},
             {"place": 22}
-        ],
-        "wormholes": [
-        ],
-        "targets": [
         ]
-
     },
     "level9": {
         "row": 5,
@@ -213,14 +177,19 @@
             {"place": 19},
             {"place": 23},
             {"place": 25}
-        ],
-        "wormholes": [
-           
-        ],
-        "targets": [
-            
         ]
+    },
+    "tutorial": {
+        "row": 3,
+        "col": 3,
+        "ufo": 7,
+        "earth":0,
+        "lasers":1,
+        
+        "astroids": [
+            {"place": 1}
 
+        ]
     }
     
 }

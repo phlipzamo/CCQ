@@ -2,7 +2,10 @@ var isMobile = navigator.userAgent.indexOf("Mobile");
 if (isMobile == -1) {
     isMobile = navigator.userAgent.indexOf("Tablet");
 }
-if (isMobile == -1) {
+if ( document.URL.includes("homepage.aspx") ) {
+    //Code here
+}
+if (document.URL.includes("game.html") ) {
     var config = {
         type: Phaser.AUTO,scale: {mode: Phaser.Scale.NONE,
             parent: 'phaser-div',
@@ -21,17 +24,18 @@ if (isMobile == -1) {
         scene: [SceneMain],
         
     };
-} else {
+} 
+else {
     var config = {
         type: Phaser.AUTO,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width:500,
+        height: 500,
         parent: 'phaser-div',
         
         physics: {
             default: 'arcade',
             arcade: {
-                debug: false
+                debug: true
             }
         },
         dom: {
