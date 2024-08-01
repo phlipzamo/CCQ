@@ -702,6 +702,25 @@ class SceneMain extends Phaser.Scene {
                 this.goalIndex = -1;
                 this.uiSuccessGroup.setVisible(true); 
                 disableBtns();
+                if (getCookie("isChildAccount") == "true") {
+                    var usernameQuery = getCookie('username');
+                    var levelCookie = "level".concat(getCookie('level'));
+                    childAccountsCollection.doc(`${usernameQuery}`).set({
+                        [levelCookie]: true
+                    }, { merge: true });
+                } else if (getCookie("isChildAccount") == "false") {
+                    auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            var userUID = auth.currentUser.uid;
+                            var levelCookie = "level".concat(getCookie('level'));
+                            adultAccountsCollection.doc(`${userUID}`).set({
+                                [levelCookie]: true
+                            }, { merge: true });
+                        }
+                    });
+                } else {
+                    console.log("Error. User should have isChildAccount cookie with value of true or false, but does not.");
+                }
             }
             
         }
@@ -1175,26 +1194,6 @@ class SceneMain extends Phaser.Scene {
         this.uiSuccessGroup.add(txt_Sucess);
         this.uiSuccessGroup.add(nextLevelButton);
         this.uiSuccessGroup.setVisible(false);
-
-        if (getCookie("isChildAccount") == "true") {
-            var usernameQuery = getCookie('username');
-            var levelCookie = "level".concat(getCookie('level'));
-            childAccountsCollection.doc(`${usernameQuery}`).set({
-                [levelCookie]: true
-            }, { merge: true });
-        } else if (getCookie("isChildAccount") == "false") {
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    var userUID = auth.currentUser.uid;
-                    var levelCookie = "level".concat(getCookie('level'));
-                    adultAccountsCollection.doc(`${userUID}`).set({
-                        [levelCookie]: true
-                    }, { merge: true });
-                }
-            });
-        } else {
-            console.log("Error. User should have isChildAccount cookie with value of true or false, but does not.");
-        }
     }
    
     enterButtonHoverState(btn, color) {
