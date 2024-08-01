@@ -41,6 +41,11 @@ p {
     z-index: 2;
 }
 
+h4 > p {
+    margin: 0px;
+    color:#ddd;
+}
+
 button {
     background-color: #1E90FF;
     border: none;

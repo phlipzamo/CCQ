@@ -1176,20 +1176,22 @@ class SceneMain extends Phaser.Scene {
         this.uiSuccessGroup.add(nextLevelButton);
         this.uiSuccessGroup.setVisible(false);
 
-        // TODO add badges and level progress to Firestore after level complete
         if (getCookie("isChildAccount") == "true") {
-            // TODO add level progress to the document that corresponds to the username cookie. See add_child_account.html
             var usernameQuery = getCookie('username');
             var levelCookie = "level".concat(getCookie('level'));
             childAccountsCollection.doc(`${usernameQuery}`).set({
                 [levelCookie]: true
             }, { merge: true });
         } else if (getCookie("isChildAccount") == "false") {
-            var userUID = auth.currentUser.uid;
-            var levelCookie = "level".concat(getCookie('level'));
-            adultAccountsCollection.doc(`${userUID}`).set({
-                [levelCookie]: true
-            }, { merge: true });
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    var userUID = auth.currentUser.uid;
+                    var levelCookie = "level".concat(getCookie('level'));
+                    adultAccountsCollection.doc(`${userUID}`).set({
+                        [levelCookie]: true
+                    }, { merge: true });
+                }
+            });
         } else {
             console.log("Error. User should have isChildAccount cookie with value of true or false, but does not.");
         }

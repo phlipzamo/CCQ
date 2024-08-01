@@ -27,8 +27,8 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Your Child Accounts</h1>
+    <div class="container" style="padding:0px;">
+        <h1 style="margin-bottom:0px;">Your Child Accounts</h1>
         <h4 id="childDetails"></h4>
     </div>
 
@@ -60,7 +60,7 @@
                     .where('parent_uid', '==', user.uid)
                     .onSnapshot(querySnapshot => {
                         const items = querySnapshot.docs.map(doc => {
-                            return `<h2>Child Account: ${doc.data().username}</h2>
+                            return `Child Account: ${doc.data().username}
                                     <p>Level 1: ${doc.data().level1}</p>
                                     <p>Level 2: ${doc.data().level2}</p>
                                     <p>Level 3: ${doc.data().level3}</p>
