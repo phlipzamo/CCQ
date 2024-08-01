@@ -196,9 +196,15 @@
         "lasers":1,
         
         "astroids": [
-            {"place": 1}
-
-        ]
+            {"place": 1},
+            {"place": 4}
+        ],
+        "wormholes": {
+            "startColor": "red", 
+            "start": 3, 
+            "endColor": "green",
+            "end": 5,
+            "target": 4 }
     }
     
 }

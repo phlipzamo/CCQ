@@ -197,6 +197,7 @@ class SceneMain extends Phaser.Scene {
         this.createLevel();
         this.animationCreate();
         
+        this.lasers = new Lasers(this);
         
         if(this.level.wormholes){
             if(this.level.wormholes.startColor ==="red"){
@@ -274,16 +275,19 @@ class SceneMain extends Phaser.Scene {
         );
         if(this.target){
             this.physics.add.overlap(this.target, this.lasers, (target,laser) =>
-                {
-                    if(this.target.anims.getName()==="RedTarget"){
-                        this.target.play("GreenTarget");
-                        this.wormholeStart.play("red");
+                { 
+                    this.laserDistance = (laser.x-target.x)+ (laser.y-target.y)
+                    if(Math.abs(this.laserDistance)<=5){
+                        if(this.target.anims.getName()==="RedTarget"){
+                            this.target.play("GreenTarget");
+                            this.wormholeStart.play("red");
+                        }
+                        else{
+                            this.target.play("RedTarget");
+                            this.wormholeStart.play("green");
+                        }
+                        laser.destroy();
                     }
-                    else{
-                        this.target.play("RedTarget");
-                        this.wormholeStart.play("green");
-                    }
-                    laser.destroy();
                 }
             );
         }
@@ -296,20 +300,14 @@ class SceneMain extends Phaser.Scene {
             disableBtns();
         });
         fwdButton.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"F",line: 0, boolIf: false});
    
             this.running = true;
             this.complete = true;
         }) 
         rightButton.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
    
             this.running = true;
@@ -317,20 +315,14 @@ class SceneMain extends Phaser.Scene {
         }) 
         leftButton.addEventListener('click', e => { 
 
-            this.stopPlayer();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"L",line: 0, boolIf: false});
    
             this.running = true;
             this.complete = true;
         }) 
         shootButton.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"S",line: 0, boolIf: false});
    
             this.running = true;
@@ -338,10 +330,8 @@ class SceneMain extends Phaser.Scene {
         }) 
         ifAButton.addEventListener('click', e => { 
 
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
+            this.unhideAllAstroid();
             this.stackOfActions.push({action:"A",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: true});
             this.running = true;
@@ -349,10 +339,7 @@ class SceneMain extends Phaser.Scene {
         }) 
         ifEButton.addEventListener('click', e => { 
 
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"E",line: 0, boolIf: false});
             this.stackOfActions.push({action:"F",line: 0, boolIf: true});
             this.running = true;
@@ -360,59 +347,47 @@ class SceneMain extends Phaser.Scene {
         }) 
         ifOBButton.addEventListener('click', e => { 
 
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
+            this.ufo.angle = -180
+            this.playerAngle = -180
             this.stackOfActions.push({action:"OB",line: 0, boolIf: false});
             this.stackOfActions.push({action:"L",line: 0, boolIf: true});
             this.running = true;
             this.complete = true;
         }) 
         ifTButton.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
+            this.unhideForTarget();
             this.stackOfActions.push({action:"T",line: 0, boolIf: false});
             this.stackOfActions.push({action:"S",line: 0, boolIf: true});
             this.running = true;
             this.complete = true;
         }) 
         times1Button.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         }) 
         times2Button.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         })
         times3Button.addEventListener('click', e => { 
-
-            this.stopPlayer();
-            this.unHideLaserUI();
-            this.setPlayer(this.level.ufo);
-            this.stackOfActions.length = 0;
+            this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         })
+        this.hideAstroid(this.astroidGroup.getChildren()[1])
+        this.hideAstroid(this.target);
+        this.hideAstroid(this.wormholeStart)
+        this.hideAstroid(this.wormholeEnd)
     }
     update() {
         if(this.playerAngle == 0){
@@ -515,12 +490,7 @@ class SceneMain extends Phaser.Scene {
                     //this.stopMusic();
                     if (this.goalIndex != this.playerIndex)
                     {
-                        this.stopPlayer()
-                        
-                        this.unHideLaserUI();
-                        this.unhideAllAstroid();
-                        this.setPlayer(this.level.ufo);
-                        this.stackOfActions.length = 0;
+                       //this.reset();
                     }
 
                 }
@@ -607,7 +577,17 @@ class SceneMain extends Phaser.Scene {
         this.game.sound.mute = isMute;
     }
   
-   
+    reset(){
+        this.stopPlayer()
+        this.unHideLaserUI();
+        this.unhideAllAstroid();
+        this.hideAstroid(this.astroidGroup.getChildren()[1]);
+        this.hideAstroid(this.target);
+        this.hideAstroid(this.wormholeStart);
+        this.hideAstroid(this.wormholeEnd);
+        this.setPlayer(this.level.ufo);
+        this.stackOfActions.length = 0;
+    }
 
    
     createLevel(){
@@ -722,6 +702,14 @@ class SceneMain extends Phaser.Scene {
     hideAstroid(astroid){
         astroid.setVisible(false);
         astroid.body.reset(500,-64);
+    }
+    unhideForTarget(){
+        this.target.setVisible(true);
+        this.wormholeStart.setVisible(true)
+        this.wormholeEnd.setVisible(true)
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.target, this.target, .9);
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.start, this.wormholeStart, .9);
+        this.aGrid.placeAndScaleAtIndex(this.level.wormholes.end, this.wormholeEnd, .9);
     }
     unhideAllAstroid(){
         for(var i =0; i<this.level.astroids.length; i++){
