@@ -136,7 +136,6 @@ class SceneMain extends Phaser.Scene {
         this.load.atlas("portal", "assets/portal.png","assets/portal.json");
        
         this.load.atlas("ufo", "assets/cowufo.png", "assets/cowufo.json");
-        this.load.image("earth", "assets/earth.png");
         this.load.json('level', 'assets/Levels/levels.json');
         this.load.audio("background", "assets/space.ogg");
         this.load.audio("wormhole","assets/Wormhole.wav");
@@ -218,7 +217,7 @@ class SceneMain extends Phaser.Scene {
             this.aGrid.placeAndScaleAtIndex(this.level.wormholes.end, this.wormholeEnd,.8);
             this.aGrid.placeAndScaleAtIndex(this.level.wormholes.target, this.target,.8);
         }
-
+        this.createScriptOverlay();
         this.physics.add.overlap(this.ufo, this.astroidGroup, (ufo, astroid) =>
         {   
             if(this.endstate){return}
@@ -300,6 +299,8 @@ class SceneMain extends Phaser.Scene {
             disableBtns();
         });
         fwdButton.addEventListener('click', e => { 
+            this.script.setText("forward 1");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"F",line: 0, boolIf: false});
    
@@ -307,6 +308,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         rightButton.addEventListener('click', e => { 
+            this.script.setText("rotate_right 1");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
    
@@ -314,7 +317,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         leftButton.addEventListener('click', e => { 
-
+            this.script.setText("rotate_left 1");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"L",line: 0, boolIf: false});
    
@@ -322,6 +326,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         shootButton.addEventListener('click', e => { 
+            this.script.setText("shoot 1");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"S",line: 0, boolIf: false});
    
@@ -329,7 +335,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         ifAButton.addEventListener('click', e => { 
-
+            this.script.setText("if(AstroidInFront)\n    rotate_right 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.unhideAllAstroid();
             this.stackOfActions.push({action:"A",line: 0, boolIf: false});
@@ -338,7 +345,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         ifEButton.addEventListener('click', e => { 
-
+            this.script.setText("if(EmptyInFront)\n    forward 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"E",line: 0, boolIf: false});
             this.stackOfActions.push({action:"F",line: 0, boolIf: true});
@@ -346,7 +354,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         ifOBButton.addEventListener('click', e => { 
-
+            this.script.setText("if(OBInFront)\n    rotate_left 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.ufo.angle = -180
             this.playerAngle = -180
@@ -356,6 +365,8 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         ifTButton.addEventListener('click', e => { 
+            this.script.setText("if(TargetInFront)\n    shoot 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.unhideForTarget();
             this.stackOfActions.push({action:"T",line: 0, boolIf: false});
@@ -364,23 +375,35 @@ class SceneMain extends Phaser.Scene {
             this.complete = true;
         }) 
         times1Button.addEventListener('click', e => { 
+            this.script.setText("1.times\n    rotate_right 1\n    rotate_left 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         }) 
         times2Button.addEventListener('click', e => { 
+            this.script.setText("2.times\n    rotate_right 1\n    rotate_left 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         })
         times3Button.addEventListener('click', e => { 
+            this.script.setText("3.times\n    rotate_right 1\n    rotate_left 1\nend");
+            this.uiScriptGroup.setVisible(true);
             this.reset();
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.stackOfActions.push({action:"R",line: 0, boolIf: false});
+            this.stackOfActions.push({action:"L",line: 0, boolIf: false});
             this.running = true;
             this.complete = true;
         })
@@ -1068,5 +1091,24 @@ class SceneMain extends Phaser.Scene {
             }
         }
         return myObj
+    }
+    createScriptOverlay(){
+        this.title = this.add.text(0,0, "Example Script",{fontFamily: "Arial Black", fontSize: 17, color:"#FFFFFF"});//, stroke: "#05ed04", strokeThickness: 8 });
+        this.scriptContainer = this.add.graphics()//this.add.rectangle(50, 50, 165, 100, 0xffffff);
+        this.scriptContainer.lineStyle(2,0xFFFFFF);
+        this.scriptContainer.strokeRect(0,50,165,100)
+        this.uiScriptGroup = this.add.group();
+        this.script =this.add.text(0,0, "Test",{fontFamily: "Arial Black", fontSize: 17, color:"#FFFFFF"});//, stroke: "#05ed04", strokeThickness: 8 });
+        this.iconBarGrid.placeTextAtIndex(14, this.title);
+        this.title.x+=15
+        //this.iconBarGrid.placeTextAtIndex(13, this.scriptContainer);
+        this.iconBarGrid.placeTextAtIndex(26, this.script);
+        
+        this.script.x+=5
+        //txt_Sucess.setDepth = 30;
+        this.uiScriptGroup.add(this.script);
+        this.uiScriptGroup.add(this.title);
+        this.uiScriptGroup.add(this.scriptContainer);
+        this.uiScriptGroup.setVisible(false);
     }
 }
