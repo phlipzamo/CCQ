@@ -6,40 +6,17 @@
     <title>Cosmic Code Quest</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore-compat.js"></script>
-
-    <script>
-        const firebaseConfig = {
-          apiKey: "AIzaSyCY-sgMJqTJWkrV5GEfSlj51fmr0eKUZ4s",
-          authDomain: "cosmiccodequest.firebaseapp.com",
-          projectId: "cosmiccodequest",
-          storageBucket: "cosmiccodequest.appspot.com",
-          messagingSenderId: "1078215067126",
-          appId: "1:1078215067126:web:b62a0538ace8c99b1633d7",
-          measurementId: "G-YTB44CQTQ2"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
 </head>
 <body>
-    
     <div class="scriptcontainer">
-       
         <div id ="editorCode" class="scriptcontainer" onclick="removeMarkers()">
-      
         </div>
         <div>
             <button id= "run" data-tooltip="Run the code" onclick="setRun()">RUN <i class="fas fa-play"></i></button>
             <button id = "delete" data-tooltip="Delete the current line" onclick="deleteLine()">DELETE LINE <i class="fas fa-trash-alt"></i></button>
             <button id = "clear" data-tooltip="Clear all lines" onclick="clearScript()">CLEAR ALL <i class="fas fa-eraser"></i></button>
         </div>
-        
     </div>
-    
-
     <div class="consolecontainer">
         <div class="modal" id="modal">
             <div class ="modal-header">
@@ -84,18 +61,13 @@
         <button id= "times" data-modal-open = "#modal" data-tooltip="Repeat chosen action" onclick="print('times')">TIMES <i class="fa-solid fa-repeat"></i></button>
         <button id= "if" data-modal-open = "#modalIF" data-tooltip="Check if something is in front" onclick="print('if')">If <i class="fa-solid fa-question"></i></button>
     </div>
-  
     <div id = "phaser-div" class="gamecontainer">
         <!-- Game grid for graphics -->
     </div>
-    <script src="js/phaser/phaser.js">  
-    </script>
-    <script src="js/util/align.js">  
-    </script>
-    <script src="js/util/alignGrid.js">  
-    </script>
-    <script src="js/util/UIBlock.js">  
-    </script>
+    <script src="js/phaser/phaser.js"></script>
+    <script src="js/util/align.js"></script>
+    <script src="js/util/alignGrid.js"></script>
+    <script src="js/util/UIBlock.js"></script>
     <script src = "js/moo/moo.js"></script>
     <script src="js/sceneMain.js"></script>
     <script src="js/main.js"></script>
