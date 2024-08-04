@@ -1,93 +1,108 @@
-
+//Initialize
 let codeEditor = ace.edit("editorCode",{
     highlightActiveLine: true,
     showPrintMargin: false,
     theme: 'ace/theme/gob',
     mode: 'ace/mode/python'
 });
+//set FontSize
 document.getElementById('editorCode').style.fontSize='20px';
+//setAutoComplete
 codeEditor.setOptions({
-    enableBasicAutocompletion: [{
-      getCompletions: (editor, session, pos, prefix, callback) => {
-        // note, won't fire if caret is at a word that does not have these letters
-        callback(null, [
-          {value: 'forward()', score: 1, meta: 'Moves UFO Forward'},
-          {value: 'backward()', score: 2, meta: 'Moves UFO Forward'},
-          {value: 'rotate_right()', score: 2, meta: 'Rotate UFO Right'},
-          {value: 'rotate_left()', score: 2, meta: 'Rotate UFO Left'},
-          {value: 'if ', score: 1, meta: 'if statement'},
-          {value: 'for 1 to 5:', score: 2, meta: 'For 10 times'},
-        ]);
-      },
-    }],
-    // to make popup appear automatically, without explicit _ctrl+space_
-    enableLiveAutocompletion: true,
-  });
+  enableBasicAutocompletion: [{
+    getCompletions: (editor, session, pos, prefix, callback) => {
+      // note, won't fire if caret is at a word that does not have these letters
+      callback(null, [
+        {value: 'forward()', score: 1, meta: 'Moves UFO Forward'},
+        {value: 'backward()', score: 2, meta: 'Moves UFO Forward'},
+        {value: 'rotate_right()', score: 2, meta: 'Rotate UFO Right'},
+        {value: 'rotate_left()', score: 2, meta: 'Rotate UFO Left'},
+        {value: 'if ', score: 1, meta: 'if statement'},
+        {value: 'for 1 to 5:', score: 2, meta: 'For 10 times'},
+      ]);
+    },
+  }],
+  // to make popup appear automatically, without explicit _ctrl+space_
+  enableLiveAutocompletion: true,
+});
+//initial Value
 codeEditor.setValue("");
 codeEditor.session.setUseWrapMode(true);
 codeEditor.setReadOnly(true);
 var lineSelected = 1;
-function print(text){
-    var session = codeEditor.session;
-    var cursor = codeEditor.selection.getCursor();
-    var currentLine = cursor.row;
-    var line = codeEditor.session.getLine(currentLine);
-    var loopIndentAmount= 0;
-    var indent="    "
-    var end = "end"
-    for(var i = currentLine+1; i<codeEditor.session.getLength(); i++){
-      lineContent = codeEditor.session.getLine(i);
-      if(lineContent.includes("end")){
-        loopIndentAmount++;
-      }
-    }
-    for(var i=0;i<loopIndentAmount; i++){
-      text = indent+text;
-      end = indent+end;
-    }
-    if (line ===""){
-        session.insert({
-            row: currentLine,
-            column: 0
-         }, text);
-    }
-    else{
-        if(cursor.column ===0 && cursor.row===0){
-          session.insert({
-            row: currentLine,
-            column: 0
-          },text.replace(/\s/g, "")+" \n");
-          codeEditor.selection.moveToPosition({
-            row: currentLine,
-            column:  codeEditor.session.getLine(currentLine).length
-          });
-          return;
-        }
-        else{
-          codeEditor.selection.moveToPosition({
-            row: currentLine,
-            column:  codeEditor.session.getLine(currentLine).length
-          });
-          session.insert({
-            row: currentLine,
-            column: codeEditor.session.getLine(currentLine).length
-         }, "\n"+ text);
-         currentLine++;
-        }
-    }
 
-    if (text.includes("times") || text.includes("if")){
-      session.insert({
-        row: currentLine,
-        column: codeEditor.session.getLine(currentLine).length
-      }, "\n"+end);
-      var endPosition = {
-        row: currentLine,
-        column: codeEditor.session.getLine(currentLine).length
-      };
-      
-      codeEditor.selection.moveToPosition(endPosition);
+// Print to text editor
+function print(text){
+  var session = codeEditor.session;
+  var cursor = codeEditor.selection.getCursor();
+  var currentLineNum = cursor.row;
+  var line = codeEditor.session.getLine(currentLineNum);
+  var loopIndentAmount= 0;
+  var indent="    "
+  var end = "end"
+  //Future implentation
+  //getCurrent indent
+  //if times or if indent++
+  
+  // Current implentation
+  // get how many if and times and indent that many
+
+  for(var i = currentLineNum+1; i<codeEditor.session.getLength(); i++){
+    lineContent = codeEditor.session.getLine(i);
+    if(lineContent.includes("end")){
+      loopIndentAmount++;
     }
+  }
+
+  for(var i=0;i<loopIndentAmount; i++){
+    text = indent+text;
+    end = indent+end;
+  }
+
+  if (line ===""){
+      session.insert({
+          row: currentLineNum,
+          column: 0
+        }, text);
+
+  }
+  else{
+      if(cursor.column ===0 && cursor.row===0){
+        session.insert({
+          row: currentLineNum,
+          column: 0
+        },text.replace(/\s/g, "")+" \n");
+        codeEditor.selection.moveToPosition({
+          row: currentLineNum,
+          column:  codeEditor.session.getLine(currentLineNum).length
+        });
+        return;
+      }
+      else{
+        codeEditor.selection.moveToPosition({
+          row: currentLineNum,
+          column:  codeEditor.session.getLine(currentLineNum).length
+        });
+        session.insert({
+          row: currentLineNum,
+          column: codeEditor.session.getLine(currentLineNum).length
+        }, "\n"+ text);
+        currentLineNum++;
+      }
+  }
+
+  if (text.includes("times") || text.includes("if")){
+    session.insert({
+      row: currentLineNum,
+      column: codeEditor.session.getLine(currentLineNum).length
+    }, "\n"+end);
+    var endPosition = {
+      row: currentLineNum,
+      column: codeEditor.session.getLine(currentLineNum).length
+    };
+    
+    codeEditor.selection.moveToPosition(endPosition);
+  }
 }
 
 function printNextTo(text){
@@ -171,14 +186,11 @@ function countWhitespace(str) {
       whitespaceCount++;
     }
   }
-
   // Return the total count of whitespace characters
   return whitespaceCount;
 }
 function clearScript(){
   var totalLines = codeEditor.session.doc.getLength();
-
-  // Remove all full lines (including line numbers)
   codeEditor.session.doc.removeFullLines(0, totalLines); 
 }
 function getScript(){
